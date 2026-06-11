@@ -3,37 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ishaan - Portfolio</title>
+    <title>Ishaan Sharma</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="#home">Ishaan</a>
+                <a href="#home">ishaan.</a>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#home" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#about" class="nav-link">About</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#projects" class="nav-link">Projects</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#essays" class="nav-link">Essays</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#cv" class="nav-link">CV</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#contact" class="nav-link">Contact</a>
-                </li>
+                <li><a href="#home" class="nav-link">home</a></li>
+                <li><a href="#about" class="nav-link">about</a></li>
+                <li><a href="#geocycle" class="nav-link nav-link-geo">geocycle <span class="geo-dot"></span></a></li>
+                <li><a href="#projects" class="nav-link">projects</a></li>
+                <li><a href="#essays" class="nav-link">essays</a></li>
+                <li><a href="#cv" class="nav-link">cv</a></li>
+                <li><a href="#contact" class="nav-link">contact</a></li>
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -43,116 +35,184 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section id="home" class="hero">
+        <div class="hero-bg">
+            <div class="accent-rail"></div>
+            <div class="grid-texture"></div>
+            <div class="orb orb-1" data-speed="0.18"></div>
+            <div class="orb orb-2" data-speed="0.15"></div>
+        </div>
         <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">hi, i'm <span class="highlight">ishaan</span></h1>
-                <p class="hero-subtitle">developer • designer • innovator</p>
-                <p class="hero-description">building digital experiences that matter</p>
-                <div class="hero-buttons">
-                    <a href="#projects" class="btn btn-primary">view my work</a>
-                    <a href="#contact" class="btn btn-secondary">get in touch</a>
-                </div>
+            <p class="hero-eyebrow">hey there</p>
+            <h1 class="hero-name">
+                <span class="name-solid">i'm</span>
+                <span class="name-outline">ishaan</span>
+            </h1>
+            <p class="hero-sub">developer <span class="sep">·</span> designer <span class="sep">·</span> builder</p>
+            <div class="hero-btns">
+                <a href="#projects" class="btn btn-primary">view my work</a>
+                <a href="#contact" class="btn btn-outline">get in touch</a>
             </div>
-            <div class="hero-visual">
-                <div class="floating-elements">
-                    <div class="element element-1"></div>
-                    <div class="element element-2"></div>
-                    <div class="element element-3"></div>
-                </div>
-            </div>
+        </div>
+        <div class="scroll-hint">
+            <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+            <span>scroll</span>
         </div>
     </section>
 
-    <!-- About Section -->
+    <!-- About -->
     <section id="about" class="about">
+        <div class="section-parallax-bg" data-parallax-section></div>
         <div class="container">
+            <p class="eyebrow">who i am</p>
             <h2 class="section-title">About Me</h2>
-            <div class="about-content">
+            <div class="about-grid">
                 <div class="about-text">
-                    <p>i’m ishaan sharma, a curious creator passionate about technology, design, and music. from building innovative apps to refurbishing tech for underserved communities, i aim to bridge the digital divide and make technology more accessible.</p>
-                    <p> whether i’m coding, writing, or exploring new sounds, i’m driven by the excitement of turning ideas into impactful experiences. i believe in using creativity and technical skill to spark meaningful change in the world around me.</p>
-                    <div class="skills">
-                        <br>
+                    <p>i'm ishaan sharma, a curious creator passionate about technology, design, and music. from building innovative apps to refurbishing tech for underserved communities, i aim to bridge the digital divide and make technology more accessible.</p>
+                    <p>whether i'm coding, writing, or exploring new sounds, i'm driven by the excitement of turning ideas into impactful experiences. i believe in using creativity and technical skill to spark meaningful change in the world around me.</p>
+                    <div class="skills-block">
                         <h3>skills & technologies</h3>
-                        <br>
-
                         <div class="skill-tags">
                             <span class="skill-tag">JavaScript</span>
                             <span class="skill-tag">React</span>
-                            <span class="skill-tag">C#  </span>
+                            <span class="skill-tag">Next.js</span>
+                            <span class="skill-tag">C#</span>
                             <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Node.js</span>
                             <span class="skill-tag">UI/UX Design</span>
                             <span class="skill-tag">Lua</span>
                         </div>
                     </div>
                 </div>
-                <div class="about-image">
-                    <div class="image-placeholder">
-                        <i class="fas fa-user"></i>
+                <div class="about-side">
+                    <div class="avatar-wrap">
+                        <div class="avatar-ring">
+                            <div class="avatar-inner">
+                                <img src="ishaanheadshot.jpg" alt="Ishaan Sharma">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-card">
+                            <span class="stat-num">3+</span>
+                            <span class="stat-label">years building</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">10+</span>
+                            <span class="stat-label">projects shipped</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
+    <!-- GeoCycle Featured Section -->
+    <section id="geocycle" class="geocycle-section">
+        <div class="gc-bg">
+            <div class="gc-orb gc-orb-1" data-speed="0.2"></div>
+            <div class="gc-orb gc-orb-2" data-speed="0.12"></div>
+        </div>
         <div class="container">
+            <div class="gc-inner">
+                <div class="gc-text">
+                    <p class="eyebrow gc-eyebrow">featured project</p>
+                    <h2 class="gc-title">Geo<span class="gc-accent">Cycle</span></h2>
+                    <p class="gc-desc">AI-powered waste classifier. Snap a photo of any item and get an instant verdict — <strong>trash</strong>, <strong>recycling</strong>, or <strong>compost</strong>. Making sustainability effortless, one scan at a time.</p>
+                    <div class="gc-tags">
+                        <span class="gc-tag"><i class="fas fa-brain"></i> AI Vision</span>
+                        <span class="gc-tag"><i class="fas fa-leaf"></i> Sustainability</span>
+                        <span class="gc-tag"><i class="fab fa-react"></i> Next.js</span>
+                        <span class="gc-tag"><i class="fas fa-camera"></i> Image Analysis</span>
+                    </div>
+                    <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="btn btn-green">
+                        Try GeoCycle <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="gc-embed">
+                    <div class="browser-chrome">
+                        <div class="browser-dots">
+                            <span class="bdot bdot-red"></span>
+                            <span class="bdot bdot-yellow"></span>
+                            <span class="bdot bdot-green"></span>
+                        </div>
+                        <div class="browser-url">geocycle.vercel.app/waste</div>
+                    </div>
+                    <div class="embed-body">
+                        <iframe
+                            id="gc-frame"
+                            src="https://geocycle.vercel.app/waste"
+                            title="GeoCycle — Waste Identifier"
+                            frameborder="0"
+                            loading="lazy"
+                            allowfullscreen>
+                        </iframe>
+                        <div class="embed-fallback" id="embed-fallback">
+                            <div class="fallback-icon"><i class="fas fa-recycle"></i></div>
+                            <p>Open the app to try it</p>
+                            <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="btn btn-green-sm">
+                                Open GeoCycle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="projects">
+        <div class="section-parallax-bg" data-parallax-section></div>
+        <div class="container">
+            <p class="eyebrow">what i've built</p>
             <h2 class="section-title">Projects</h2>
             <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-code"></i>
+                <div class="project-card reveal">
+                    <div class="project-icon"><i class="fas fa-recycle"></i></div>
+                    <div class="project-body">
+                        <h3>GeoCycle</h3>
+                        <p>AI waste identifier — takes a photo and classifies items as trash, recycling, or compost using computer vision.</p>
+                        <div class="proj-tags">
+                            <span>Next.js</span>
+                            <span>AI Vision</span>
+                            <span>Vercel</span>
+                        </div>
+                        <div class="proj-links">
+                            <a href="https://geocycle.vercel.app/waste" target="_blank" class="proj-link">Live Demo →</a>
+                        </div>
                     </div>
-                    <div class="project-content">
-                        <h3>Project One</h3>
-                        <p>A modern web application built with React and Node.js, featuring real-time updates and responsive design.</p>
-                        <div class="project-tags">
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-icon"><i class="fas fa-key"></i></div>
+                    <div class="project-body">
+                        <h3>Caesar Cipher Decoder</h3>
+                        <p>Frequency analysis-powered cipher decoder — paste any Caesar-encoded text and get an instant decode using letter frequency statistics.</p>
+                        <div class="proj-tags">
                             <span>React</span>
-                            <span>Node.js</span>
-                            <span>MongoDB</span>
+                            <span>HTML</span>
                         </div>
-                        <div class="project-links">
-                            <a href="#" class="project-link">Live Demo</a>
-                            <a href="#" class="project-link">GitHub</a>
+                        <div class="proj-links">
+                            <a href="https://github.com/ishaandpool/caesar-cipher" target="_blank" class="proj-link">GitHub →</a>
                         </div>
                     </div>
                 </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3>Project Two</h3>
-                        <p>Mobile-first design system with component library and design tokens for consistent user experiences.</p>
-                        <div class="project-tags">
-                            <span>Design System</span>
-                            <span>Figma</span>
-                            <span>Storybook</span>
+                <div class="project-card reveal">
+                    <div class="project-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="project-body">
+                        <h3>OscarAI</h3>
+                        <p>Designed the full website for an AI-powered trash sorting startup. Clean, high-converting design for a nationally recognized company.</p>
+                        <div class="proj-tags">
+                            <span>UI/UX Design</span>
+                            <span>Web Design</span>
                         </div>
-                        <div class="project-links">
-                            <a href="#" class="project-link">Case Study</a>
-                            <a href="#" class="project-link">Documentation</a>
+                        <div class="award-badges">
+                            <span class="award-badge"><i class="fas fa-medal"></i> Ingenious</span>
+                            <span class="award-badge"><i class="fas fa-star"></i> VIRSF+</span>
                         </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3>Project Three</h3>
-                        <p>Data visualization dashboard with interactive charts and real-time analytics for business insights.</p>
-                        <div class="project-tags">
-                            <span>D3.js</span>
-                            <span>Python</span>
-                            <span>PostgreSQL</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="project-link">Demo</a>
-                            <a href="#" class="project-link">GitHub</a>
+                        <div class="proj-links">
+                            <a href="https://oscarai.ca" target="_blank" class="proj-link">Live Site →</a>
+                            <a href="https://github.com/ItzXizZ/oscarai-website" target="_blank" class="proj-link">GitHub →</a>
                         </div>
                     </div>
                 </div>
@@ -160,24 +220,26 @@
         </div>
     </section>
 
-    <!-- Essays Section -->
+    <!-- Essays -->
     <section id="essays" class="essays">
+        <div class="section-parallax-bg" data-parallax-section></div>
         <div class="container">
-            <h2 class="section-title">Essays & Thoughts</h2>
+            <p class="eyebrow">thoughts & writing</p>
+            <h2 class="section-title">Essays</h2>
             <div class="essays-grid">
-                <article class="essay-card">
+                <article class="essay-card reveal">
                     <div class="essay-date">March 15, 2025</div>
                     <h3>The Future of Web Development</h3>
-                    <p>The internet’s evolution has always mirrored technological advances and societal shifts...</p>
+                    <p>The internet's evolution has always mirrored technological advances and societal shifts...</p>
                     <a href="#" class="read-more">Read More →</a>
                 </article>
-                <article class="essay-card">
+                <article class="essay-card reveal">
                     <div class="essay-date">February 28, 2024</div>
                     <h3>Designing for Accessibility</h3>
                     <p>Why inclusive design isn't just good practice—it's essential for creating better products...</p>
                     <a href="#" class="read-more">Read More →</a>
                 </article>
-                <article class="essay-card">
+                <article class="essay-card reveal">
                     <div class="essay-date">January 12, 2024</div>
                     <h3>Building Scalable Systems</h3>
                     <p>Lessons learned from architecting systems that can handle millions of users...</p>
@@ -187,60 +249,67 @@
         </div>
     </section>
 
-    <!-- CV Section -->
+    <!-- CV -->
     <section id="cv" class="cv">
+        <div class="section-parallax-bg" data-parallax-section></div>
         <div class="container">
+            <p class="eyebrow">my journey</p>
             <h2 class="section-title">Experience & Education</h2>
-            <div class="cv-content">
-                <div class="cv-section">
-                    <h3>Work Experience</h3>
+            <div class="cv-cols">
+                <div class="cv-col">
+                    <h3 class="cv-col-title"><i class="fas fa-briefcase"></i> Work</h3>
                     <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-date">2023 - Present</div>
-                            <div class="timeline-content">
+                        <div class="timeline-item reveal">
+                            <div class="t-marker"></div>
+                            <div class="t-content">
+                                <span class="t-date">2023 – Present</span>
                                 <h4>Lead Sensei</h4>
-                                <p class="company">Code Ninjas</p>
-                                <p>Leading training of employees and mentoring younger students.</p>
+                                <p class="t-company">Code Ninjas</p>
+                                <p>Leading employee training and mentoring younger students in programming fundamentals.</p>
                             </div>
                         </div>
-                        <div class="timeline-item">
-                            <div class="timeline-date">2021 - 2023</div>
-                            <div class="timeline-content">
+                        <div class="timeline-item reveal">
+                            <div class="t-marker"></div>
+                            <div class="t-content">
+                                <span class="t-date">2021 – 2023</span>
                                 <h4>Full Stack Developer</h4>
-                                <p class="company">ionrunit inc.</p>
-                                <p>i want 2 tho 3</p>
+                                <p class="t-company">ionrunit inc.</p>
+                                <p>Built and maintained full-stack web applications for production environments.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="cv-section">
-                    <h3>Education</h3>
+                <div class="cv-col">
+                    <h3 class="cv-col-title"><i class="fas fa-graduation-cap"></i> Education</h3>
                     <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-date">2026 - 2030</div>
-                            <div class="timeline-content">
-                                <h4>Bachelor of Computer Science</h4>
-                                <p class="company">Georgia Institute of Technology</p>
-                                <p>Graduated with honors, focused on software engineering and design.</p>
+                        <div class="timeline-item reveal">
+                            <div class="t-marker"></div>
+                            <div class="t-content">
+                                <span class="t-date">2026 – 2030</span>
+                                <h4>B.S. Computer Science</h4>
+                                <p class="t-company">Virginia Tech</p>
+                                <p>Focused on software engineering, systems design, and human-computer interaction.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="cv-download">
-                    <a href="#" class="btn btn-primary">Download Full CV</a>
-                </div>
+            </div>
+            <div class="cv-download">
+                <a href="#" class="btn btn-primary">Download Full CV</a>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Contact -->
     <section id="contact" class="contact">
+        <div class="section-parallax-bg" data-parallax-section></div>
         <div class="container">
+            <p class="eyebrow">let's talk</p>
             <h2 class="section-title">Get In Touch</h2>
-            <div class="contact-content">
+            <div class="contact-grid">
                 <div class="contact-info">
-                    <h3>Let's work together</h3>
-                    <p>I'm always interested in new opportunities and collaborations. Whether you have a project in mind or just want to chat, feel free to reach out.</p>
+                    <h3>let's work together</h3>
+                    <p>always open to new opportunities and collaborations. whether you have a project in mind or just want to chat, feel free to reach out.</p>
                     <div class="contact-methods">
                         <div class="contact-method">
                             <i class="fas fa-envelope"></i>
@@ -256,25 +325,34 @@
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="https://github.com/ishaandpool" target="_blank" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/ishaan-sharma-02613b35a/" target="_blank" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.instagram.com/ishaanfrrr" target="_blank" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
-                <form class="contact-form">
+                <form class="contact-form" id="contact-form">
+                    <div data-fs-success class="form-success">
+                        <i class="fas fa-check-circle"></i>
+                        Message sent! I'll get back to you soon.
+                    </div>
+                    <div data-fs-error class="form-error-global"></div>
                     <div class="form-group">
-                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        <input type="text" name="name" placeholder="Your Name" required data-fs-field>
+                        <span data-fs-error="name" class="field-error"></span>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Your Email" required>
+                        <input type="email" name="email" placeholder="Your Email" required data-fs-field>
+                        <span data-fs-error="email" class="field-error"></span>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="subject" name="subject" placeholder="Subject" required>
+                        <input type="text" name="subject" placeholder="Subject" required data-fs-field>
+                        <span data-fs-error="subject" class="field-error"></span>
                     </div>
                     <div class="form-group">
-                        <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+                        <textarea name="message" placeholder="Your Message" rows="5" required data-fs-field></textarea>
+                        <span data-fs-error="message" class="field-error"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button type="submit" class="btn btn-primary" data-fs-submit-btn>Send Message</button>
                 </form>
             </div>
         </div>
@@ -283,11 +361,23 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Ishaan. All rights reserved.</p>
+            <div class="footer-inner">
+                <span class="footer-logo">ishaan.</span>
+                <p>&copy; 2025 Ishaan Sharma. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="footer-gc-link">
+                        <i class="fas fa-recycle"></i> geocycle
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+        formspree('initForm', { formElement: '#contact-form', formId: 'xbdezgke' });
+    </script>
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
-

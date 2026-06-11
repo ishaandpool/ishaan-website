@@ -1,331 +1,205 @@
-// Mobile Navigation Toggle
+/* ============================================================
+   MOBILE NAV
+   ============================================================ */
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     navMenu.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
 });
 
-// Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         hamburger.classList.remove('active');
         navMenu.classList.remove('active');
+        document.body.style.overflow = '';
     });
 });
 
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+/* ============================================================
+   NAVBAR SCROLL STATE
+   ============================================================ */
+const navbar = document.querySelector('.navbar');
+
+function updateNavbar() {
+    if (window.pageYOffset > 60) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+}
+
+/* ============================================================
+   PARALLAX ENGINE
+   All parallax updates happen inside one rAF loop.
+   ============================================================ */
+const parallaxOrbs = document.querySelectorAll('[data-speed]');
+const sectionBgs   = document.querySelectorAll('[data-parallax-section]');
+
+function updateParallax() {
+    const scrollY = window.pageYOffset;
+
+    // Hero orbs and GeoCycle orbs — move relative to absolute scroll position
+    parallaxOrbs.forEach(orb => {
+        const speed = parseFloat(orb.dataset.speed);
+        orb.style.transform = `translateY(${scrollY * speed}px)`;
     });
-});
 
-// Intersection Observer for scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+    // Section background radial glows — move relative to their section's position
+    sectionBgs.forEach(bg => {
+        const section = bg.parentElement;
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight;
+        // progress: 0 when section top at viewport bottom, 1 when section bottom at viewport top
+        const progress = (vh - rect.top) / (vh + rect.height);
+        const offset = (progress - 0.5) * 120;
+        bg.style.transform = `translateY(${offset}px)`;
+    });
+}
 
-const observer = new IntersectionObserver((entries) => {
+/* ============================================================
+   SCROLL REVEAL (IntersectionObserver)
+   ============================================================ */
+const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('animate');
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
         }
     });
-}, observerOptions);
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-// Observe elements for animation
-document.addEventListener('DOMContentLoaded', () => {
-    // Project cards
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach(card => observer.observe(card));
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // Essay cards
-    const essayCards = document.querySelectorAll('.essay-card');
-    essayCards.forEach(card => observer.observe(card));
+/* ============================================================
+   UNIFIED SCROLL HANDLER (throttled via rAF)
+   ============================================================ */
+let ticking = false;
 
-    // Timeline items
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    timelineItems.forEach(item => observer.observe(item));
-});
-
-// Navbar background on scroll
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-    } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = 'none';
+function onScroll() {
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            updateNavbar();
+            updateParallax();
+            ticking = false;
+        });
+        ticking = true;
     }
-});
+}
 
-// Parallax effect for floating elements
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const elements = document.querySelectorAll('.element');
-    
-    elements.forEach((element, index) => {
-        const speed = 0.5 + (index * 0.1);
-        const yPos = -(scrolled * speed);
-        element.style.transform = `translateY(${yPos}px)`;
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// Run once on load
+updateNavbar();
+updateParallax();
+
+/* ============================================================
+   GEOCYCLE IFRAME — detect if it's being blocked
+   We can't catch X-Frame-Options directly, so we wait for
+   the iframe to load then check if contentDocument is accessible.
+   If not (cross-origin blocked), show the fallback overlay.
+   ============================================================ */
+const gcFrame    = document.getElementById('gc-frame');
+const gcFallback = document.getElementById('embed-fallback');
+
+if (gcFrame && gcFallback) {
+    // Give the iframe some time to attempt loading
+    const fallbackTimer = setTimeout(() => {
+        // If the iframe contentDocument is null or throws (blocked), show fallback
+        try {
+            const doc = gcFrame.contentDocument || gcFrame.contentWindow.document;
+            if (!doc || doc.body === null || doc.body.innerHTML === '') {
+                gcFallback.classList.add('visible');
+            }
+        } catch (e) {
+            // Cross-origin access blocked — the embed itself may still be showing
+            // Don't show fallback since the content might be rendering fine
+        }
+    }, 4000);
+
+    gcFrame.addEventListener('load', () => {
+        clearTimeout(fallbackTimer);
+        try {
+            const doc = gcFrame.contentDocument || gcFrame.contentWindow.document;
+            if (!doc || doc.body === null) {
+                gcFallback.classList.add('visible');
+            }
+        } catch (e) {
+            // Cross-origin, but likely loaded — don't show fallback
+        }
     });
-});
 
-// Form submission handling
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const subject = formData.get('subject');
-        const message = formData.get('message');
-        
-        // Simple validation
-        if (!name || !email || !subject || !message) {
-            showNotification('Please fill in all fields', 'error');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            showNotification('Please enter a valid email address', 'error');
-            return;
-        }
-        
-        // Simulate form submission
-        showNotification('Message sent successfully!', 'success');
-        contactForm.reset();
+    gcFrame.addEventListener('error', () => {
+        gcFallback.classList.add('visible');
     });
 }
 
-// Notification system
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span class="notification-message">${message}</span>
-            <button class="notification-close">&times;</button>
-        </div>
-    `;
-    
-    // Add styles
-    notification.style.cssText = `
+/* Contact form submission handled by @formspree/ajax (see bottom of index.html) */
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+function showToast(message, type = 'info') {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+
+    const colors = { success: '#22c55e', error: '#F7374F', info: '#88304E' };
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toast.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        bottom: 2rem;
+        right: 2rem;
+        background: ${colors[type] || colors.info};
+        color: #fff;
+        padding: 0.9rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        font-family: 'Syne', sans-serif;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
         z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 300px;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        max-width: 320px;
     `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Close button functionality
-    const closeBtn = notification.querySelector('.notification-close');
-    closeBtn.addEventListener('click', () => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
+
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
     });
-    
-    // Auto remove after 5 seconds
+
     setTimeout(() => {
-        if (notification.parentNode) {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 5000);
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 4500);
 }
 
-// Typing effect for hero title
-function typeWriter(element, text, speed = 100) {
-    let i = 0;
-    element.innerHTML = '';
-    
-    function type() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
+/* ============================================================
+   SMOOTH SCROLL FOR NAV LINKS
+   ============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            const navH = navbar ? navbar.offsetHeight : 0;
+            const top  = target.getBoundingClientRect().top + window.pageYOffset - navH;
+            window.scrollTo({ top, behavior: 'smooth' });
         }
-    }
-    
-    type();
-}
+    });
+});
 
-// Initialize typing effect when page loads
+/* ============================================================
+   PAGE LOAD FADE-IN
+   ============================================================ */
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.4s ease';
 window.addEventListener('load', () => {
-    const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle) {
-        const originalText = heroTitle.textContent;
-        typeWriter(heroTitle, originalText, 80);
-    }
+    document.body.style.opacity = '1';
 });
-
-// Smooth reveal animation for sections
-function revealOnScroll() {
-    const sections = document.querySelectorAll('section');
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        const windowHeight = window.innerHeight;
-        const scrollY = window.pageYOffset;
-        
-        if (scrollY + windowHeight > sectionTop + sectionHeight * 0.3) {
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-        }
-    });
-}
-
-// Add reveal styles to sections
-document.addEventListener('DOMContentLoaded', () => {
-    const sections = document.querySelectorAll('section:not(.hero)');
-    sections.forEach(section => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(30px)';
-        section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-    });
-    
-    // Initial reveal check
-    revealOnScroll();
-});
-
-// Add scroll event listener for reveal
-window.addEventListener('scroll', revealOnScroll);
-
-// Hover effects for interactive elements
-document.addEventListener('DOMContentLoaded', () => {
-    // Add hover effects to skill tags
-    const skillTags = document.querySelectorAll('.skill-tag');
-    skillTags.forEach(tag => {
-        tag.addEventListener('mouseenter', () => {
-            tag.style.transform = 'translateY(-3px) scale(1.05)';
-        });
-        
-        tag.addEventListener('mouseleave', () => {
-            tag.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-    
-    // Add hover effects to project cards
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-});
-
-// Loading animation
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
-// Cursor trail effect (optional)
-let mouseX = 0;
-let mouseY = 0;
-let cursorTrail = [];
-
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    
-    // Create cursor trail element
-    const trail = document.createElement('div');
-    trail.className = 'cursor-trail';
-    trail.style.cssText = `
-        position: fixed;
-        width: 6px;
-        height: 6px;
-        background: #522546;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        left: ${mouseX}px;
-        top: ${mouseY}px;
-        opacity: 0.6;
-        transition: all 0.1s ease;
-    `;
-    
-    document.body.appendChild(trail);
-    
-    // Add to trail array
-    cursorTrail.push(trail);
-    
-    // Remove old trail elements
-    if (cursorTrail.length > 10) {
-        const oldTrail = cursorTrail.shift();
-        oldTrail.style.opacity = '0';
-        setTimeout(() => oldTrail.remove(), 100);
-    }
-    
-    // Fade out trail elements
-    setTimeout(() => {
-        trail.style.opacity = '0';
-        setTimeout(() => trail.remove(), 100);
-    }, 1000);
-});
-
-// Performance optimization: Throttle scroll events
-function throttle(func, limit) {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    }
-}
-
-// Apply throttling to scroll events
-window.addEventListener('scroll', throttle(() => {
-    revealOnScroll();
-}, 16)); // 60fps
-
