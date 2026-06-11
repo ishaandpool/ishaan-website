@@ -139,6 +139,41 @@ if (gcFrame && gcFallback) {
 /* Contact form submission handled by @formspree/ajax (see bottom of index.html) */
 
 /* ============================================================
+   PROJECT CARD IFRAMES — show fallback if embed is blocked
+   ============================================================ */
+document.querySelectorAll('.proj-iframe-wrap').forEach(wrap => {
+    const iframe = wrap.querySelector('iframe');
+    const fallback = wrap.querySelector('.proj-iframe-fallback');
+    if (!iframe || !fallback) return;
+
+    const timer = setTimeout(() => {
+        try {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            if (!doc || doc.body === null || doc.body.innerHTML === '') {
+                fallback.classList.add('visible');
+            }
+        } catch (e) {
+            // Cross-origin — content may still be rendering, don't show fallback
+        }
+    }, 5000);
+
+    iframe.addEventListener('load', () => {
+        clearTimeout(timer);
+        try {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            if (!doc || doc.body === null) fallback.classList.add('visible');
+        } catch (e) {
+            // Cross-origin but likely loaded fine
+        }
+    });
+
+    iframe.addEventListener('error', () => {
+        clearTimeout(timer);
+        fallback.classList.add('visible');
+    });
+});
+
+/* ============================================================
    TOAST NOTIFICATIONS
    ============================================================ */
 function showToast(message, type = 'info') {
