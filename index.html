@@ -6,17 +6,15 @@
 <title>Ishaan Sharma — Portfolio</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; height:100%; background:#060608; overflow:hidden;
-             display:flex; flex-direction:column; align-items:center; justify-content:center; }
-canvas { display:block; border:1px solid rgba(247,55,79,0.15);
-         box-shadow:0 0 60px rgba(247,55,79,0.08), 0 0 120px rgba(0,0,0,0.8); }
+html, body { width:100%; height:100%; background:#060608; overflow:hidden; }
+canvas { display:block; width:100vw; height:100vh; }
 
-/* End navigation overlay */
 #end-overlay {
-  display:none; position:absolute; flex-direction:column; align-items:center; gap:18px;
+  display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  flex-direction:column; align-items:center; gap:18px;
   background:rgba(6,6,8,0.97); border:1px solid rgba(247,55,79,0.3);
-  border-radius:10px; padding:32px 40px; max-width:520px; text-align:center;
-  box-shadow:0 0 40px rgba(247,55,79,0.12);
+  border-radius:10px; padding:32px 40px; max-width:560px; text-align:center;
+  box-shadow:0 0 40px rgba(247,55,79,0.12); z-index:10;
 }
 #end-overlay.show { display:flex; }
 #end-overlay h2 { font-family:monospace; font-size:22px; font-weight:700; color:#F7374F;
@@ -27,32 +25,35 @@ canvas { display:block; border:1px solid rgba(247,55,79,0.15);
            padding:9px 16px; border-radius:5px; border:1px solid; cursor:pointer;
            background:none; transition:all .15s; }
 .nav-btn:hover { opacity:.85; }
-.nb-red   { color:#F7374F; border-color:rgba(247,55,79,.5); }
-.nb-red:hover   { background:rgba(247,55,79,.12); }
-.nb-amber { color:#f59e0b; border-color:rgba(245,158,11,.5); }
-.nb-amber:hover { background:rgba(245,158,11,.12); }
-.nb-green { color:#22c55e; border-color:rgba(34,197,94,.5); }
-.nb-green:hover { background:rgba(34,197,94,.12); }
-.nb-purple{ color:#a78bfa; border-color:rgba(167,139,250,.5); }
-.nb-purple:hover{ background:rgba(167,139,250,.12); }
-.nb-blue  { color:#4FA8FF; border-color:rgba(79,168,255,.5); }
-.nb-blue:hover  { background:rgba(79,168,255,.12); }
-.nb-orange{ color:#f97316; border-color:rgba(249,115,22,.5); }
-.nb-orange:hover{ background:rgba(249,115,22,.12); }
+.nb-red    { color:#F7374F; border-color:rgba(247,55,79,.5); }
+.nb-red:hover    { background:rgba(247,55,79,.12); }
+.nb-amber  { color:#f59e0b; border-color:rgba(245,158,11,.5); }
+.nb-amber:hover  { background:rgba(245,158,11,.12); }
+.nb-green  { color:#22c55e; border-color:rgba(34,197,94,.5); }
+.nb-green:hover  { background:rgba(34,197,94,.12); }
+.nb-purple { color:#a78bfa; border-color:rgba(167,139,250,.5); }
+.nb-purple:hover { background:rgba(167,139,250,.12); }
+.nb-blue   { color:#4FA8FF; border-color:rgba(79,168,255,.5); }
+.nb-blue:hover   { background:rgba(79,168,255,.12); }
+.nb-orange { color:#f97316; border-color:rgba(249,115,22,.5); }
+.nb-orange:hover { background:rgba(249,115,22,.12); }
+.nb-pink   { color:#ec4899; border-color:rgba(236,72,153,.5); }
+.nb-pink:hover   { background:rgba(236,72,153,.12); }
 </style>
 </head>
 <body>
-<canvas id="c" width="900" height="500" tabindex="0" style="outline:none;position:relative;z-index:1"></canvas>
+<canvas id="c" tabindex="0" style="outline:none;"></canvas>
 <div id="end-overlay">
   <h2>🎉 You explored everything!</h2>
-  <p>You've walked through Ishaan's intro, background, work experience,<br>projects, contact info, and hobbies. Nice job making it all the way.</p>
+  <p>You walked through Ishaan's intro, background, work experience,<br>projects, contact info, hobbies, and survived the playground. Respect.</p>
   <div class="nav-btns">
     <button class="nav-btn nb-red"    onclick="jumpTo('intro')">↩ Start Over</button>
     <button class="nav-btn nb-amber"  onclick="jumpTo('about')">About Me</button>
     <button class="nav-btn nb-green"  onclick="jumpTo('work')">Work Exp</button>
     <button class="nav-btn nb-purple" onclick="jumpTo('projects')">Projects</button>
     <button class="nav-btn nb-blue"   onclick="jumpTo('contact')">Contact</button>
-    <button class="nav-btn nb-orange" onclick="jumpTo('hobbies')">↩ Hobbies</button>
+    <button class="nav-btn nb-orange" onclick="jumpTo('hobbies')">Hobbies</button>
+    <button class="nav-btn nb-pink"   onclick="jumpTo('playground')">↺ Playground</button>
   </div>
 </div>
 
@@ -62,15 +63,47 @@ const C = document.getElementById('c');
 const ctx = C.getContext('2d');
 const W = 900, H = 500;
 
+function resize() {
+  C.width  = window.innerWidth;
+  C.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
 C.focus();
 C.addEventListener('mousedown', () => C.focus());
 document.addEventListener('keydown', e => {
-  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyS'].includes(e.code))
+  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyS','KeyX'].includes(e.code))
     e.preventDefault();
   K[e.code] = true;
 });
 document.addEventListener('keyup', e => { K[e.code] = false; });
 const K = {};
+
+// Project card click / hover
+C.addEventListener('click', e => {
+  if (curRoom !== 'projects') return;
+  const rect = C.getBoundingClientRect();
+  const gx = (e.clientX - rect.left) * W / rect.width;
+  const gy = (e.clientY - rect.top)  * H / rect.height;
+  for (const pl of ROOM_MAP['projects'].platforms) {
+    if (!pl.url) continue;
+    if (gx >= pl.x && gx <= pl.x+pl.w && gy >= pl.y-60 && gy <= pl.y+pl.h)
+      window.open(pl.url, '_blank');
+  }
+});
+C.addEventListener('mousemove', e => {
+  if (curRoom !== 'projects') { C.style.cursor = 'default'; return; }
+  const rect = C.getBoundingClientRect();
+  const gx = (e.clientX - rect.left) * W / rect.width;
+  const gy = (e.clientY - rect.top)  * H / rect.height;
+  let hov = false;
+  for (const pl of ROOM_MAP['projects'].platforms) {
+    if (!pl.url) continue;
+    if (gx >= pl.x && gx <= pl.x+pl.w && gy >= pl.y-60 && gy <= pl.y+pl.h) { hov=true; break; }
+  }
+  C.style.cursor = hov ? 'pointer' : 'default';
+});
 
 // ══════════════════════════════════════════════════════════════════ PLAYER ══
 const P = { x:60, y:380, vx:0, vy:0, w:14, h:22, ground:false, dir:1, frame:0, ft:0 };
@@ -91,7 +124,9 @@ function physicsStep(platforms, clampL=true, clampR=true) {
   for(const pl of platforms){
     const prevB=P.y+P.h-P.vy;
     if(P.x+P.w>pl.x&&P.x<pl.x+pl.w&&P.y+P.h>=pl.y&&prevB<=pl.y+6&&P.vy>=0){
-      P.y=pl.y-P.h;P.vy=0;P.ground=true;
+      P.y=pl.y-P.h;
+      if(pl.boostV){ P.vy=pl.boostV; P.ground=false; }
+      else { P.vy=0; P.ground=true; }
     }
   }
   if(P.y<0){P.y=0;if(P.vy<0)P.vy=0;}
@@ -150,32 +185,25 @@ const ALL_ROOMS = [
    platforms:[
      {x:0,y:460,w:900,h:40},
      {x:510,y:120,w:240,h:12,
-      label:'Chief Management Officer',      org:'Orbyt',
-      date:'Jul 2025 – Present',
+      label:'Chief Management Officer', org:'Orbyt', date:'Jul 2025 – Present',
       detail:'Directing 175+ interns from Duke, Stanford, Columbia & UMich across growth, software, and product engineering · 2 MVPs delivered on schedule'},
      {x:155,y:165,w:240,h:12,
-      label:'Software Dev Intern',           org:'OscarAI',
-      date:'Jun 2025 – Present',
+      label:'Software Dev Intern', org:'OscarAI', date:'Jun 2025 – Present',
       detail:'Selected as 1 of 3 from 200+ applicants · designed and iterated on the official site for an award-winning enviro-sustainability startup'},
      {x:480,y:215,w:240,h:12,
-      label:'Program Coordinator',           org:'Build-A-Biz',
-      date:'Nov 2024 – Present',
+      label:'Program Coordinator', org:'Build-A-Biz', date:'Nov 2024 – Present',
       detail:'200+ volunteer hours coordinating youth entrepreneurship programs · designed and led workshops on business fundamentals for diverse students'},
      {x:130,y:270,w:240,h:12,
-      label:'Chief Design Officer',          org:'Affinity — VEI',
-      date:'Aug 2024 – May 2026',
+      label:'Chief Design Officer', org:'Affinity — VEI', date:'Aug 2024 – May 2026',
       detail:"Developed product line's visual identity & website · represented Affinity at VEI national competition · pitch presentations and design showcases"},
      {x:480,y:325,w:240,h:12,
-      label:'Co-President',                  org:'Power Up Project',
-      date:'Aug 2023 – Present',
+      label:'Co-President', org:'Power Up Project', date:'Aug 2023 – Present',
       detail:'Oversaw refurbishment & redistribution of 300+ devices ($60,000+ value) to underserved communities · 600+ volunteer hours · student-run nonprofit'},
      {x:120,y:375,w:240,h:12,
-      label:'Lead Sensei',                   org:'Code Ninjas',
-      date:'Jun 2022 – Present',
+      label:'Lead Sensei', org:'Code Ninjas', date:'Jun 2022 – Present',
       detail:'1,000+ hrs teaching 300+ students ages 6–14 in JS, C#, Lua & block coding · one of only 3 staff with a center key · mentored junior staff'},
      {x:430,y:420,w:240,h:12,
-      label:'Club President',                org:'Toastmasters Intl (TED-Partnered)',
-      date:'Dec 2018 – Dec 2024',
+      label:'Club President', org:'Toastmasters Intl (TED-Partnered)', date:'Dec 2018 – Dec 2024',
       detail:'Active member for 6 years · served 2 years as President · oversaw operations, member engagement, and meeting execution in a TED-partnered club'},
    ],
    overlays:[
@@ -188,19 +216,16 @@ const ALL_ROOMS = [
    platforms:[
      {x:0,y:460,w:900,h:40},
      {x:40, y:340,w:240,h:12,
-      label:'GeoCycle',
-      org:'geocycle.vercel.app/waste',
-      date:'Next.js · AI Vision · Vercel',
+      label:'GeoCycle', org:'geocycle.vercel.app/waste', date:'Next.js · AI Vision · Vercel',
+      url:'https://geocycle.vercel.app/waste',
       detail:'AI waste classifier — snap a photo and get an instant verdict: trash, recycling, or compost. Making sustainability effortless.'},
      {x:330,y:272,w:240,h:12,
-      label:'Caesar Cipher Decoder',
-      org:'caesar-cipher-alpha.vercel.app',
-      date:'React · HTML · Vercel',
+      label:'Caesar Cipher Decoder', org:'caesar-cipher-alpha.vercel.app', date:'React · HTML · Vercel',
+      url:'https://caesar-cipher-alpha.vercel.app',
       detail:'Frequency-analysis cipher decoder — paste any Caesar-encoded text and get an instant decode using letter frequency statistics.'},
      {x:620,y:340,w:240,h:12,
-      label:'OscarAI Website',
-      org:'oscarai.ca',
-      date:'UI/UX Design · Web Design',
+      label:'OscarAI Website', org:'oscarai.ca', date:'UI/UX Design · Web Design',
+      url:'https://oscarai.ca',
       detail:'Designed the full website for an AI-powered trash sorting startup. Clean, high-converting design · Ingenious Award · VIRSF+ winner.'},
      {x:150,y:200,w:180,h:12},
      {x:560,y:200,w:180,h:12},
@@ -208,7 +233,7 @@ const ALL_ROOMS = [
    ],
    overlays:[
      {x:450,y:28,txt:'PROJECTS', font:'bold 22px monospace', color:'#a78bfa', glow:18},
-     {x:450,y:50,txt:'Land on a project to read about it', font:'10px monospace', color:'#1e1032'},
+     {x:450,y:50,txt:'Land on a project to read · click the card to visit the live demo', font:'10px monospace', color:'#1e1032'},
    ]},
 
   // ── 4 CONTACT ───────────────────────────────────────────────────────────
@@ -224,7 +249,7 @@ const ALL_ROOMS = [
    overlays:[
      {x:450,y:28, txt:"CONTACT", font:'bold 22px monospace', color:'#4FA8FF', glow:18},
      {x:450,y:55, txt:"let's work together", font:'12px monospace', color:'#888'},
-     {x:450,y:118,txt:'✉  hello@ishaan.dev', font:'14px monospace', color:'#ddd'},
+     {x:450,y:118,txt:'✉  ishaan@vt.edu', font:'14px monospace', color:'#ddd'},
      {x:450,y:148,txt:'📞  +1 (630) 853-7916', font:'13px monospace', color:'#bbb'},
      {x:450,y:176,txt:'📍  Chicago, IL', font:'13px monospace', color:'#bbb'},
      {x:450,y:212,txt:'GitHub: ishaandpool  ·  LinkedIn: ishaan-sharma-02613b35a  ·  IG: ishaanfrrr', font:'9.5px monospace', color:'#444'},
@@ -237,86 +262,184 @@ const ALL_ROOMS = [
    platforms:[
      {x:0,y:460,w:900,h:40},
      {x:18, y:388,w:160,h:12,
-      label:'🎵 Music',
-      org:'Making & listening',
-      date:'Ongoing',
+      label:'🎵 Music', org:'Making & listening', date:'Ongoing',
       detail:'Love exploring sounds and making music. Always have headphones on — big fan of hip-hop, lo-fi, and electronic.'},
      {x:215,y:388,w:150,h:12,
-      label:'🎮 Game Dev',
-      org:'Lua · C# · Roblox',
-      date:'Since 2018',
+      label:'🎮 Game Dev', org:'Lua · C# · Roblox', date:'Since 2018',
       detail:'Built scripts and mini-games in Roblox (Lua) and Unity (C#). Understanding how games work from the inside out.'},
      {x:400,y:388,w:155,h:12,
-      label:'🎨 Design for Fun',
-      org:'Figma · Adobe',
-      date:'Ongoing',
+      label:'🎨 Design for Fun', org:'Figma · Adobe', date:'Ongoing',
       detail:"Visual design beyond the 9-to-5 — personal art, typography experiments, and brand design projects for fun."},
      {x:590,y:388,w:160,h:12,
-      label:'🎤 Public Speaking',
-      org:'Toastmasters TED-partnered',
-      date:'6 years',
+      label:'🎤 Public Speaking', org:'Toastmasters TED-partnered', date:'6 years',
       detail:"Love crafting and delivering speeches. Toastmasters member for 6 years, club president for 2. TED-partnered club."},
      {x:785,y:388,w:105,h:12,
-      label:'✍️ Writing',
-      org:'Essays & ideas',
-      date:'Ongoing',
+      label:'✍️ Writing', org:'Essays & ideas', date:'Ongoing',
       detail:"Writing as a way of thinking. Essays, reflections, and creative work. 'coding, writing, or exploring new sounds' — that's the vibe."},
      {x:60, y:298,w:170,h:12,
-      label:'📚 Philosophy',
-      org:'Minor @ Virginia Tech',
-      date:'Academic + personal',
+      label:'📚 Philosophy', org:'Minor @ Virginia Tech', date:'Academic + personal',
       detail:"Philosophy minor because I genuinely love it. Consciousness, ethics, epistemology — what is knowledge? What's the right thing to do?"},
      {x:285,y:285,w:165,h:12,
-      label:'💻 Side Projects',
-      org:'Late-night hacks',
-      date:'Always',
+      label:'💻 Side Projects', org:'Late-night hacks', date:'Always',
       detail:"Always have something cooking. Curiosity-driven tinkering — if I have an idea I build it. Most don't ship, and that's okay."},
      {x:490,y:298,w:180,h:12,
-      label:'🏙 Chicago',
-      org:'South suburbs · Chi-town',
-      date:'Home',
+      label:'🏙 Chicago', org:'South suburbs · Chi-town', date:'Home',
       detail:"Born and raised in the Chicago area. Love the city energy, the architecture, the food, and the people. Go Bulls."},
      {x:710,y:285,w:170,h:12,
-      label:'🌱 Community',
-      org:'Giving back',
-      date:'Ongoing',
+      label:'🌱 Community', org:'Giving back', date:'Ongoing',
       detail:"Power Up Project, Build-A-Biz, Code Ninjas — helping others access tech and opportunity is genuinely what drives me."},
      {x:110,y:210,w:160,h:12,
-      label:'🔭 Future Goals',
-      org:'The big picture',
-      date:'By 2030',
+      label:'🔭 Future Goals', org:'The big picture', date:'By 2030',
       detail:"Start a company by 25. Make tech more accessible globally. Bridge the digital divide in a meaningful, lasting way."},
      {x:360,y:195,w:180,h:12,
-      label:'🎯 Random Facts',
-      org:'fun stuff',
-      date:'Always true',
+      label:'🎯 Random Facts', org:'fun stuff', date:'Always true',
       detail:"ACT 35 · can solve a Rubik's cube · night owl coder · makes playlists for every mood · favorite food is ramen."},
      {x:620,y:210,w:165,h:12,
-      label:'🛠 Tech I Love',
-      org:'Toolbox',
-      date:'Current',
+      label:'🛠 Tech I Love', org:'Toolbox', date:'Current',
       detail:"VS Code with Tokyo Night theme · Figma for design · Vercel for deploys · Arc Browser · Notion for everything else."},
      {x:200,y:128,w:180,h:12,
-      label:'🏆 Achievement Unlocked',
-      org:"You climbed to the top!",
-      date:'Right now',
-      detail:"Seriously though — thank you for exploring this far. I put a lot into this portfolio. Reach out anytime: hello@ishaan.dev"},
+      label:'🏆 Achievement Unlocked', org:"You climbed to the top!", date:'Right now',
+      detail:"Seriously though — thank you for exploring this far. I put a lot into this portfolio. Reach out anytime: ishaan@vt.edu"},
      {x:520,y:110,w:160,h:12,
-      label:'🌟 Easter Egg',
-      org:'You found it',
-      date:'👀',
+      label:'🌟 Easter Egg', org:'You found it', date:'👀',
       detail:"Okay you REALLY went looking. Bonus fact: this entire portfolio is a canvas platformer built in vanilla JS. No frameworks. Pure fun."},
      {x:340,y:65, w:100,h:12},
    ],
    overlays:[
      {x:450,y:26,txt:'HOBBIES & INTERESTS', font:'bold 18px monospace', color:'#f97316', glow:18},
-     {x:450,y:46,txt:'Explore freely · there are secrets up high · jump on cards to learn more', font:'9px monospace', color:'#301808'},
+     {x:450,y:46,txt:'Explore freely · there are secrets up high · walk right to reach the PLAYGROUND →', font:'9px monospace', color:'#301808'},
    ]},
+
+  // ── 6 PLAYGROUND ────────────────────────────────────────────────────────
+  {id:'playground', name:'PLAYGROUND', accent:'#ec4899', platforms:[], overlays:[]},
 ];
 
 const ROOM_MAP = {};
 ALL_ROOMS.forEach((r,i) => { ROOM_MAP[r.id] = {...r, idx:i}; });
 const ROOM_IDS = ALL_ROOMS.map(r=>r.id);
+
+// ══════════════════════════════════════════════════════════ PLAYGROUND DATA ══
+const PG_W = 4800;
+
+const PG_PLATFORMS = [
+  // ── Floors (with gaps between them) ───────────────────────────────────
+  {x:0,    y:460, w:920,  h:40},
+  {x:960,  y:460, w:480,  h:40},
+  {x:1490, y:460, w:360,  h:40},
+  {x:1900, y:460, w:290,  h:40},
+  {x:2240, y:460, w:280,  h:40},
+  {x:2580, y:460, w:270,  h:40},
+  {x:2910, y:460, w:310,  h:40},
+  {x:3280, y:460, w:260,  h:40},
+  {x:3600, y:460, w:560,  h:40},
+  {x:4220, y:460, w:580,  h:40},
+
+  // ── Zone 0: Tutorial (0-920) — learn to jump ──────────────────────────
+  {x:120,  y:370, w:80,  h:12},
+  {x:270,  y:302, w:80,  h:12},
+  {x:430,  y:238, w:80,  h:12},
+  {x:610,  y:178, w:80,  h:12},
+  {x:770,  y:118, w:80,  h:12},
+  {x:820,  y:64,  w:65,  h:12},  // wings rest here (collectible above)
+  {x:155,  y:448, w:36,  h:12, type:'boost',  boostV:-23},
+  {x:606,  y:448, w:30,  h:12, type:'spring', boostV:-20},
+
+  // ── Zone 1: Boost / Jump Zone (960-1860) ──────────────────────────────
+  {x:990,  y:380, w:70,  h:12},
+  {x:1120, y:300, w:70,  h:12},
+  {x:1260, y:380, w:70,  h:12},
+  {x:1390, y:295, w:70,  h:12},
+  {x:1530, y:208, w:70,  h:12},
+  {x:1660, y:370, w:70,  h:12},
+  {x:1780, y:290, w:70,  h:12},
+  {x:1050, y:448, w:36,  h:12, type:'boost',  boostV:-25},
+  {x:1340, y:448, w:30,  h:12, type:'spring', boostV:-22},
+  {x:1800, y:448, w:36,  h:12, type:'boost',  boostV:-27},
+
+  // ── Zone 2: Enemy Territory (1900-3540) ───────────────────────────────
+  {x:1930, y:370, w:110, h:12},  // enemy 1 patrols
+  {x:2060, y:288, w:80,  h:12},
+  {x:2255, y:380, w:110, h:12},  // enemy 2 patrols
+  {x:2360, y:178, w:85,  h:12},  // weapon lives up here
+  {x:2600, y:370, w:80,  h:12},
+  {x:2720, y:285, w:80,  h:12},
+  {x:2940, y:370, w:110, h:12},  // enemy 4 patrols
+  {x:3070, y:280, w:80,  h:12},
+  {x:3300, y:370, w:110, h:12},  // enemy 5 patrols
+  {x:3420, y:280, w:80,  h:12},
+  {x:2600, y:448, w:30,  h:12, type:'spring', boostV:-23},
+  {x:3370, y:448, w:36,  h:12, type:'boost',  boostV:-27},
+
+  // ── Zone 3: Final Run (3600-4800) ─────────────────────────────────────
+  {x:3630, y:378, w:80,  h:12},
+  {x:3760, y:298, w:80,  h:12},
+  {x:3900, y:218, w:80,  h:12},
+  {x:4040, y:308, w:80,  h:12},
+  {x:4250, y:378, w:80,  h:12},  // enemy 7 patrols
+  {x:4380, y:295, w:80,  h:12},
+  {x:4520, y:215, w:80,  h:12},
+  {x:4660, y:148, w:80,  h:12},
+  {x:4720, y:95,  w:120, h:12, victory:true}, // FINISH
+  {x:3820, y:448, w:30,  h:12, type:'spring', boostV:-25},
+  {x:4530, y:448, w:36,  h:12, type:'boost',  boostV:-29},
+];
+
+const PG_TEXTS = [
+  {x:75,   y:50,  txt:'← BACK TO HOBBIES',   col:'#555'},
+  {x:173,  y:434, txt:'BOOST',                col:'#f59e0b'},
+  {x:621,  y:434, txt:'SPRING',               col:'#22c55e'},
+  {x:852,  y:46,  txt:'WINGS ↑',              col:'#a78bfa'},
+  {x:1068, y:434, txt:'BOOST',                col:'#f59e0b'},
+  {x:1355, y:434, txt:'SPRING',               col:'#22c55e'},
+  {x:1818, y:434, txt:'BOOST',                col:'#f59e0b'},
+  {x:1910, y:50,  txt:'ENEMY ZONE AHEAD',     col:'#ef444455'},
+  {x:2375, y:158, txt:'WEAPON ↑',             col:'#f59e0b'},
+  {x:2615, y:434, txt:'SPRING',               col:'#22c55e'},
+  {x:3388, y:434, txt:'BOOST',                col:'#f59e0b'},
+  {x:3600, y:50,  txt:'FINAL RUN',            col:'#ec489955'},
+  {x:3835, y:434, txt:'SPRING',               col:'#22c55e'},
+  {x:4548, y:434, txt:'BOOST',                col:'#f59e0b'},
+  {x:4780, y:70,  txt:'★ FINISH ★',           col:'#ec4899'},
+];
+
+let pg = {
+  camX: 0,
+  health: 3,
+  maxHealth: 3,
+  invFrames: 0,
+  hasFlight: false,
+  hasWeapon: false,
+  victory: false,
+  _fireCD: 0,
+  lastSafeX: 80,
+  lastSafeY: 438,
+  collectibles: [
+    {x:837, y:36,  w:26, h:26, type:'wings',  col:false},
+    {x:2372,y:148, w:26, h:26, type:'weapon', col:false},
+  ],
+  enemies: [
+    {x:1945, y:348, w:18, h:22, vx: 1.5, minX:1930, maxX:2040, alive:true, iframes:0},
+    {x:2268, y:358, w:18, h:22, vx:-1.3, minX:2255, maxX:2365, alive:true, iframes:0},
+    {x:2620, y:438, w:18, h:22, vx: 1.6, minX:2580, maxX:2710, alive:true, iframes:0},
+    {x:2955, y:348, w:18, h:22, vx:-1.2, minX:2940, maxX:3050, alive:true, iframes:0},
+    {x:3315, y:348, w:18, h:22, vx: 1.5, minX:3300, maxX:3410, alive:true, iframes:0},
+    {x:3650, y:438, w:18, h:22, vx:-1.0, minX:3600, maxX:3760, alive:true, iframes:0},
+    {x:4265, y:358, w:18, h:22, vx: 1.8, minX:4250, maxX:4360, alive:true, iframes:0},
+    {x:4450, y:438, w:18, h:22, vx:-1.5, minX:4380, maxX:4560, alive:true, iframes:0},
+  ],
+  projectiles: [],
+  particles: [],
+};
+
+function resetPlayground() {
+  pg.camX=0; pg.health=3; pg.invFrames=0;
+  pg.hasFlight=false; pg.hasWeapon=false;
+  pg.victory=false; pg._fireCD=0;
+  pg.lastSafeX=80; pg.lastSafeY=438;
+  for(const c of pg.collectibles) c.col=false;
+  for(const en of pg.enemies){ en.alive=true; en.iframes=0; }
+  pg.projectiles=[]; pg.particles=[];
+}
 
 // ══════════════════════════════════════════════════════════════ STATE ══════
 let curRoom = 'intro';
@@ -344,73 +467,105 @@ function drawBg(accent){
 }
 
 function drawCardPlatform(pl, accent) {
-  const a2 = pl.accent || accent;
-  const CARD_H = 60, PAD = 8, cY = pl.y - CARD_H;
-
-  ctx.save();
-  gl(a2, 8);
-  ctx.strokeStyle = a2; ctx.lineWidth = 1;
-  ctx.fillStyle = 'rgba(7,8,10,0.94)';
-  ctx.beginPath(); ctx.roundRect(pl.x, cY, pl.w, CARD_H, 3); ctx.fill(); ctx.stroke();
+  const a2=pl.accent||accent, CARD_H=60, PAD=8, cY=pl.y-CARD_H;
+  ctx.save(); gl(a2,8);
+  ctx.strokeStyle=a2; ctx.lineWidth=1;
+  ctx.fillStyle='rgba(7,8,10,0.94)';
+  ctx.beginPath(); ctx.roundRect(pl.x,cY,pl.w,CARD_H,3); ctx.fill(); ctx.stroke();
   ngl();
-
-  ctx.textAlign = 'left';
-  ctx.fillStyle = a2; ctx.font = 'bold 9px monospace';
-  ctx.fillText(pl.label, pl.x + PAD, cY + 14);
-
-  if (pl.org) {
-    ctx.fillStyle = '#777'; ctx.font = '8px monospace';
-    ctx.fillText(pl.org, pl.x + PAD, cY + 27);
+  ctx.textAlign='left';
+  ctx.fillStyle=a2; ctx.font='bold 9px monospace';
+  ctx.fillText(pl.label,pl.x+PAD,cY+14);
+  if(pl.org){ ctx.fillStyle='#777'; ctx.font='8px monospace'; ctx.fillText(pl.org,pl.x+PAD,cY+27); }
+  if(pl.date){ ctx.textAlign='right'; ctx.fillStyle='#444'; ctx.font='7.5px monospace';
+    ctx.fillText(pl.date,pl.x+pl.w-PAD,cY+14); ctx.textAlign='left'; }
+  if(pl.detail){
+    ctx.fillStyle='#4a4a4a'; ctx.font='7.5px monospace';
+    const preview=pl.detail.length>52?pl.detail.slice(0,52)+'…':pl.detail;
+    ctx.fillText(preview,pl.x+PAD,cY+40);
+    ctx.fillText(pl.url ? '↑ stand here · click to open →' : '↑ stand here to read full',pl.x+PAD,cY+52);
   }
-  if (pl.date) {
-    ctx.textAlign = 'right'; ctx.fillStyle = '#444'; ctx.font = '7.5px monospace';
-    ctx.fillText(pl.date, pl.x + pl.w - PAD, cY + 14);
-    ctx.textAlign = 'left';
-  }
-  if (pl.detail) {
-    ctx.fillStyle = '#4a4a4a'; ctx.font = '7.5px monospace';
-    const preview = pl.detail.length > 52 ? pl.detail.slice(0,52)+'…' : pl.detail;
-    ctx.fillText(preview, pl.x + PAD, cY + 40);
-    ctx.fillText('↑ stand here to read full', pl.x + PAD, cY + 52);
-  }
-
-  gl(a2, 12); ctx.fillStyle = a2;
-  ctx.fillRect(pl.x, pl.y, pl.w, pl.h); ngl();
-  ctx.restore();
+  gl(a2,12); ctx.fillStyle=a2;
+  ctx.fillRect(pl.x,pl.y,pl.w,pl.h); ngl(); ctx.restore();
 }
 
-function drawFloorPlatform(pl) {
+function drawFloorPlatform(pl){
   ctx.fillStyle='rgba(25,25,30,0.92)'; ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
   ctx.fillStyle='#2a2a32'; ctx.fillRect(pl.x,pl.y,pl.w,1);
 }
 
-function drawSkillPlatform(pl, accent) {
-  ctx.save();
-  gl(accent, 10);
-  ctx.fillStyle = accent + '22';
-  ctx.fillRect(pl.x, pl.y - 24, pl.w, 24);
-  ctx.strokeStyle = accent; ctx.lineWidth = 1;
-  ctx.strokeRect(pl.x, pl.y - 24, pl.w, 24);
-  ctx.fillStyle = accent; ctx.font = 'bold 8.5px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText(pl.label, pl.x + pl.w/2, pl.y - 9);
-  ngl();
-  ctx.fillStyle = accent;
-  ctx.fillRect(pl.x, pl.y, pl.w, pl.h);
-  ctx.restore();
+function drawSkillPlatform(pl,accent){
+  ctx.save(); gl(accent,10);
+  ctx.fillStyle=accent+'22'; ctx.fillRect(pl.x,pl.y-24,pl.w,24);
+  ctx.strokeStyle=accent; ctx.lineWidth=1; ctx.strokeRect(pl.x,pl.y-24,pl.w,24);
+  ctx.fillStyle=accent; ctx.font='bold 8.5px monospace'; ctx.textAlign='center';
+  ctx.fillText(pl.label,pl.x+pl.w/2,pl.y-9); ngl();
+  ctx.fillStyle=accent; ctx.fillRect(pl.x,pl.y,pl.w,pl.h); ctx.restore();
 }
 
-function drawPlatform(pl, accent) {
-  if (!pl.label && !pl.detail) {
-    drawFloorPlatform(pl);
-  } else if (pl.detail) {
-    drawCardPlatform(pl, accent);
+function drawPlatform(pl,accent){
+  if(!pl.label&&!pl.detail) drawFloorPlatform(pl);
+  else if(pl.detail) drawCardPlatform(pl,accent);
+  else drawSkillPlatform(pl,accent);
+}
+
+// Playground platform drawing
+function drawPgPlatform(pl){
+  if(pl.type==='boost'){
+    ctx.save(); gl('#f59e0b',14);
+    ctx.fillStyle='#f59e0b'; ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+    ctx.fillStyle='#000'; ctx.font='bold 9px monospace'; ctx.textAlign='center';
+    ctx.fillText('^^',pl.x+pl.w/2,pl.y+9);
+    ngl(); ctx.restore();
+  } else if(pl.type==='spring'){
+    ctx.save(); gl('#22c55e',14);
+    ctx.fillStyle='#22c55e'; ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+    ctx.fillStyle='#000'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
+    ctx.fillText('~',pl.x+pl.w/2,pl.y+9);
+    ngl(); ctx.restore();
+  } else if(pl.victory){
+    ctx.save(); gl('#ec4899',22);
+    ctx.fillStyle='#ec4899'; ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+    ngl(); ctx.restore();
   } else {
-    drawSkillPlatform(pl, accent);
+    drawFloorPlatform(pl);
   }
 }
 
-function drawPlayer() {
+function drawPgCollectible(c){
+  const col=c.type==='wings'?'#a78bfa':'#f59e0b';
+  const bob=Math.sin(Date.now()/350)*4;
+  ctx.save(); gl(col,18);
+  ctx.fillStyle=col+'cc';
+  ctx.fillRect(c.x, c.y+bob, c.w, c.h);
+  ctx.fillStyle='#fff'; ctx.font='bold 9px monospace'; ctx.textAlign='center';
+  ctx.fillText(c.type==='wings'?'W':'GUN', c.x+c.w/2, c.y+bob+c.h-5);
+  ctx.fillStyle=col; ctx.font='bold 7px monospace';
+  ctx.fillText(c.type==='wings'?'WINGS':'WEAPON', c.x+c.w/2, c.y+bob-3);
+  ngl(); ctx.restore();
+}
+
+function drawEnemy(en){
+  if(!en.alive) return;
+  if(en.iframes>0 && Math.floor(en.iframes/5)%2===0) return;
+  ctx.save(); gl('#ef4444',10);
+  ctx.fillStyle='#ef4444'; ctx.fillRect(en.x,en.y,en.w,en.h);
+  // eyes
+  ctx.fillStyle='#111';
+  ctx.fillRect(en.x+3,en.y+5,3,3); ctx.fillRect(en.x+12,en.y+5,3,3);
+  // spikes
+  ctx.fillStyle='#ef4444';
+  for(let i=0;i<3;i++){
+    ctx.beginPath();
+    ctx.moveTo(en.x+2+i*6,en.y);
+    ctx.lineTo(en.x+5+i*6,en.y-7);
+    ctx.lineTo(en.x+8+i*6,en.y);
+    ctx.fill();
+  }
+  ngl(); ctx.restore();
+}
+
+function drawPlayer(){
   ctx.save(); ctx.translate(P.x+P.w/2,P.y); ctx.scale(P.dir,1);
   gl('#F7374F',14);
   ctx.fillStyle='#F7374F'; ctx.fillRect(-5,0,10,9);
@@ -422,46 +577,47 @@ function drawPlayer() {
   ngl(); ctx.restore();
 }
 
-function drawOverlay(o) {
+function drawOverlay(o){
   ctx.save(); ctx.textAlign=o.align||'center'; ctx.font=o.font; ctx.fillStyle=o.color;
   if(o.glow){gl(o.color,o.glow);}
   ctx.fillText(o.txt,o.x,o.y); ngl(); ctx.restore();
 }
 
-function drawInfoCard(card, accent) {
+function drawInfoCard(card,accent){
   if(!card||!card.detail) return;
-  const a2 = card.accent || accent;
-  const POPUP_W = Math.min(380, W - 20), POPUP_H = 88;
-  const px2 = Math.min(Math.max(card.x + card.w/2 - POPUP_W/2, 6), W - POPUP_W - 6);
-  const py2 = Math.max(card.y - 60 - POPUP_H - 10, 6);
-  ctx.save();
-  gl(a2, 24); ctx.strokeStyle = a2; ctx.lineWidth = 1.5;
-  ctx.fillStyle = 'rgba(3,4,6,0.98)';
-  ctx.beginPath(); ctx.roundRect(px2, py2, POPUP_W, POPUP_H, 6); ctx.fill(); ctx.stroke(); ngl();
+  const a2=card.accent||accent;
+  const POPUP_W=Math.min(380,W-20), POPUP_H=88;
+  const px2=Math.min(Math.max(card.x+card.w/2-POPUP_W/2,6),W-POPUP_W-6);
+  const py2=Math.max(card.y-60-POPUP_H-10,6);
+  ctx.save(); gl(a2,24); ctx.strokeStyle=a2; ctx.lineWidth=1.5;
+  ctx.fillStyle='rgba(3,4,6,0.98)';
+  ctx.beginPath(); ctx.roundRect(px2,py2,POPUP_W,POPUP_H,6); ctx.fill(); ctx.stroke(); ngl();
   ctx.textAlign='left';
-  ctx.fillStyle=a2; ctx.font='bold 11px monospace';
-  ctx.fillText((card.label||''), px2+12, py2+20);
-  if(card.org){ ctx.fillStyle='#777'; ctx.font='9px monospace'; ctx.fillText(card.org, px2+12, py2+35); }
-  if(card.date){ ctx.textAlign='right'; ctx.fillStyle='#444'; ctx.font='8.5px monospace'; ctx.fillText(card.date, px2+POPUP_W-10, py2+20); }
+  ctx.fillStyle=a2; ctx.font='bold 11px monospace'; ctx.fillText(card.label||'',px2+12,py2+20);
+  if(card.org){ ctx.fillStyle='#777'; ctx.font='9px monospace'; ctx.fillText(card.org,px2+12,py2+35); }
+  if(card.date){ ctx.textAlign='right'; ctx.fillStyle='#444'; ctx.font='8.5px monospace'; ctx.fillText(card.date,px2+POPUP_W-10,py2+20); }
   if(card.detail){
     ctx.fillStyle='#aaa'; ctx.font='9.5px monospace'; ctx.textAlign='left';
     const words=card.detail.split(' ');
-    let line='', lines=[], maxW=POPUP_W-24;
+    let line='',lines=[],maxW=POPUP_W-24;
     for(const w of words){
       const test=line+(line?' ':'')+w;
       ctx.font='9.5px monospace';
-      if(ctx.measureText(test).width > maxW){ lines.push(line); line=w; }
-      else line=test;
+      if(ctx.measureText(test).width>maxW){lines.push(line);line=w;} else line=test;
     }
     lines.push(line);
-    lines.slice(0,3).forEach((l,i)=>ctx.fillText(l, px2+12, py2+53+i*16));
-    if(lines.length>3){ ctx.fillStyle='#444'; ctx.fillText('...', px2+12, py2+53+3*16); }
+    lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,px2+12,py2+53+i*16));
+    if(lines.length>3){ctx.fillStyle='#444'; ctx.fillText('...',px2+12,py2+53+3*16);}
+  }
+  if(card.url){
+    ctx.textAlign='right'; ctx.fillStyle=a2+'88'; ctx.font='8px monospace';
+    ctx.fillText('click card to open →',px2+POPUP_W-10,py2+POPUP_H-6);
   }
   ctx.restore();
 }
 
-function drawProgressBar(rm) {
-  const n=ALL_ROOMS.length, barW=80, gap=8;
+function drawProgressBar(){
+  const n=ALL_ROOMS.length, barW=72, gap=6;
   const total=n*barW+(n-1)*gap, sx=(W-total)/2;
   for(let i=0;i<n;i++){
     const r=ALL_ROOMS[i], rx=sx+i*(barW+gap), act=r.id===curRoom;
@@ -472,29 +628,30 @@ function drawProgressBar(rm) {
     ctx.fillRect(rx,H-18,barW,6);
     if(act){
       ctx.fillStyle=r.accent; ctx.font='bold 7px monospace'; ctx.textAlign='center';
-      ctx.fillText(r.name.slice(0,10),rx+barW/2,H-5);
+      ctx.fillText(r.name.slice(0,9),rx+barW/2,H-5);
     }
     ngl(); ctx.restore();
   }
 }
 
-function drawEdgeArrow(rm) {
-  const nextId = ROOM_IDS[ROOM_IDS.indexOf(curRoom)+1];
+function drawEdgeArrow(){
+  const curIdx=ROOM_IDS.indexOf(curRoom);
+  const nextId=ROOM_IDS[curIdx+1];
   if(!nextId) return;
-  const nc = ROOM_MAP[nextId].accent;
-  const t = Date.now()/450, p2=0.4+0.5*Math.abs(Math.sin(t));
+  const nc=ROOM_MAP[nextId].accent;
+  const t=Date.now()/450, p2=0.4+0.5*Math.abs(Math.sin(t));
   ctx.save(); gl(nc,20*p2); ctx.strokeStyle=nc; ctx.lineWidth=2.5; ctx.globalAlpha=p2;
   ctx.beginPath(); ctx.moveTo(W-26,H/2-14); ctx.lineTo(W-10,H/2); ctx.lineTo(W-26,H/2+14); ctx.stroke();
   ctx.globalAlpha=1; ngl(); ctx.restore();
 }
 
-function drawWatermark(name, accent) {
+function drawWatermark(name,accent){
   ctx.save(); ctx.fillStyle=accent+'0d';
   ctx.font='bold 88px monospace'; ctx.textAlign='right';
   ctx.fillText(name,W-8,H-22); ctx.restore();
 }
 
-function drawHud(rm) {
+function drawHud(rm){
   ctx.save();
   ctx.fillStyle=rm.accent+'cc'; ctx.font='bold 10px monospace'; ctx.textAlign='left';
   ctx.fillText('// '+rm.name,12,17);
@@ -503,75 +660,287 @@ function drawHud(rm) {
   ctx.restore();
 }
 
+// Playground HUD
+function drawPgHud(){
+  ctx.save();
+  // Health hearts
+  for(let i=0;i<pg.maxHealth;i++){
+    ctx.fillStyle=i<pg.health?'#ef4444':'#2a2a2a';
+    ctx.font='18px serif'; ctx.textAlign='left';
+    ctx.fillText('♥',12+i*22,42);
+  }
+  // Power-ups
+  let ox=78;
+  if(pg.hasFlight){
+    ctx.fillStyle='#a78bfa'; ctx.font='bold 8px monospace'; ctx.textAlign='left';
+    ctx.fillText('[WINGS]',ox,42); ox+=60;
+  }
+  if(pg.hasWeapon){
+    ctx.fillStyle='#f59e0b'; ctx.font='bold 8px monospace'; ctx.textAlign='left';
+    ctx.fillText('[GUN · X to fire]',ox,42);
+  }
+  // Zone tag
+  const zone = P.x<920 ? 'TUTORIAL' : P.x<1900 ? 'BOOST ZONE' : P.x<3580 ? 'ENEMY TERRITORY' : 'FINAL RUN';
+  ctx.fillStyle='#ec489988'; ctx.font='bold 9px monospace'; ctx.textAlign='right';
+  ctx.fillText(zone,W-10,35);
+  // Controls reminder
+  ctx.fillStyle='#1a1a1a'; ctx.font='9px monospace'; ctx.textAlign='right';
+  ctx.fillText('WASD · Space=jump'+(pg.hasFlight?' (hold=fly)':'')+(pg.hasWeapon?' · X=fire':''),W-10,17);
+  ctx.fillStyle=ROOM_MAP['playground'].accent+'cc'; ctx.font='bold 10px monospace'; ctx.textAlign='left';
+  ctx.fillText('// PLAYGROUND',12,17);
+  ctx.restore();
+}
+
 // ══════════════════════════════════════════════════════════════ TICK ════════
-function tick() {
-  const rm = ROOM_MAP[curRoom];
-  const curIdx = ROOM_IDS.indexOf(curRoom);
-  const hasNext = curIdx < ROOM_IDS.length - 1;
-  const hasPrev = curIdx > 0;
+function tick(){
+  const rm=ROOM_MAP[curRoom];
+  const curIdx=ROOM_IDS.indexOf(curRoom);
+  const hasNext=curIdx<ROOM_IDS.length-1;
+  const hasPrev=curIdx>0;
 
-  physicsStep(rm.platforms, !hasPrev, !hasNext);
+  physicsStep(rm.platforms,!hasPrev,!hasNext);
 
-  if(alpha>0.95&&!transTo&&!showEnd) {
-    if(P.x+P.w>=W-3 && hasNext) {
-      transTo=ROOM_IDS[curIdx+1]; transX=60;
-    } else if(P.x<=3 && hasPrev) {
-      transTo=ROOM_IDS[curIdx-1]; transX=W-P.w-60;
-    } else if(P.x+P.w>=W-3 && !hasNext) {
-      showEnd=true;
-      document.getElementById('end-overlay').classList.add('show');
-    }
+  if(alpha>0.95&&!transTo&&!showEnd){
+    if(P.x+P.w>=W-3&&hasNext){ transTo=ROOM_IDS[curIdx+1]; transX=60; }
+    else if(P.x<=3&&hasPrev){ transTo=ROOM_IDS[curIdx-1]; transX=W-P.w-60; }
+    else if(P.x+P.w>=W-3&&!hasNext){ showEnd=true; document.getElementById('end-overlay').classList.add('show'); }
   }
 
   activeCard=null;
   for(const pl of rm.platforms){
     if(!pl.label&&!pl.detail) continue;
-    if(P.ground&&P.x+P.w>pl.x&&P.x<pl.x+pl.w&&Math.abs(P.y+P.h-pl.y)<3)
-      activeCard=pl;
+    if(P.ground&&P.x+P.w>pl.x&&P.x<pl.x+pl.w&&Math.abs(P.y+P.h-pl.y)<3) activeCard=pl;
+  }
+}
+
+function tickPlayground(){
+  // Physics (no clamping — we handle world bounds manually)
+  physicsStep(PG_PLATFORMS, false, false);
+  if(P.x<0){P.x=0;P.vx=0;}
+  if(P.x+P.w>PG_W){P.x=PG_W-P.w;P.vx=0;}
+
+  // Flight: hold Space in air to float
+  const J=K['ArrowUp']||K['KeyW']||K['Space'];
+  if(pg.hasFlight&&J&&!P.ground){ P.vy=Math.max(P.vy-0.55,-3.5); }
+
+  // Fell in a gap — respawn
+  if(P.y>H+30){
+    pg.health=Math.max(pg.health-1,0);
+    pg.invFrames=80;
+    P.x=pg.lastSafeX; P.y=pg.lastSafeY-40; P.vx=0; P.vy=0;
+    if(pg.health<=0){ pg.health=3; P.x=80; P.y=380; pg.camX=0; pg.lastSafeX=80; pg.lastSafeY=438; }
+  }
+
+  // Track last safe ground pos
+  if(P.ground){ pg.lastSafeX=P.x; pg.lastSafeY=P.y+P.h; }
+
+  // Camera
+  pg.camX=Math.max(0,Math.min(P.x+P.w/2-W/2,PG_W-W));
+
+  // Back to hobbies at left edge
+  if(!transTo&&P.x<=5&&pg.camX<=0){
+    transTo='hobbies'; transX=W-P.w-60; return;
+  }
+
+  // Victory
+  if(!pg.victory&&P.x>4720){
+    pg.victory=true; showEnd=true;
+    document.getElementById('end-overlay').classList.add('show');
+  }
+
+  // Collectibles
+  for(const c of pg.collectibles){
+    if(c.col) continue;
+    if(P.x+P.w>c.x&&P.x<c.x+c.w&&P.y+P.h>c.y&&P.y<c.y+c.h){
+      c.col=true;
+      if(c.type==='wings') pg.hasFlight=true;
+      else if(c.type==='weapon') pg.hasWeapon=true;
+    }
+  }
+
+  // Invincibility countdown
+  if(pg.invFrames>0) pg.invFrames--;
+
+  // Enemies
+  for(const en of pg.enemies){
+    if(!en.alive) continue;
+    en.x+=en.vx;
+    if(en.x<=en.minX){en.x=en.minX; en.vx=Math.abs(en.vx);}
+    if(en.x+en.w>=en.maxX){en.x=en.maxX-en.w; en.vx=-Math.abs(en.vx);}
+    if(en.iframes>0) en.iframes--;
+
+    // Player hit
+    if(pg.invFrames<=0){
+      if(P.x+P.w>en.x&&P.x<en.x+en.w&&P.y+P.h>en.y&&P.y<en.y+en.h){
+        pg.health=Math.max(pg.health-1,0);
+        pg.invFrames=90;
+        pg.hasWeapon=false;
+        P.vy=-8; P.vx=(P.x<en.x+en.w/2)?-6:6;
+        if(pg.health<=0){
+          pg.health=3;
+          P.x=pg.lastSafeX; P.y=pg.lastSafeY-40; P.vx=0; P.vy=0;
+        }
+      }
+    }
+  }
+
+  // Fire weapon (X key)
+  if(K['KeyX']&&pg.hasWeapon&&!pg._fireCD){
+    pg.projectiles.push({x:P.x+(P.dir>0?P.w:-6), y:P.y+P.h/2-3, w:14, h:6, vx:P.dir*13, life:65});
+    pg._fireCD=14;
+  }
+  if(pg._fireCD>0) pg._fireCD--;
+
+  // Projectiles
+  for(let i=pg.projectiles.length-1;i>=0;i--){
+    const proj=pg.projectiles[i];
+    proj.x+=proj.vx; proj.life--;
+    if(proj.life<=0){pg.projectiles.splice(i,1); continue;}
+    let hit=false;
+    for(const en of pg.enemies){
+      if(!en.alive) continue;
+      if(proj.x+proj.w>en.x&&proj.x<en.x+en.w&&proj.y+proj.h>en.y&&proj.y<en.y+en.h){
+        en.alive=false; hit=true;
+        for(let j=0;j<10;j++){
+          pg.particles.push({
+            x:en.x+en.w/2, y:en.y+en.h/2,
+            vx:(Math.random()-0.5)*7, vy:(Math.random()-0.5)*7-2,
+            life:40, col:'#ef4444'
+          });
+        }
+        break;
+      }
+    }
+    if(hit) pg.projectiles.splice(i,1);
+  }
+
+  // Particles
+  for(let i=pg.particles.length-1;i>=0;i--){
+    const p=pg.particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.22; p.life--;
+    if(p.life<=0) pg.particles.splice(i,1);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════ PLAYGROUND DRAW ══
+function drawPlayground(){
+  const acc='#ec4899';
+  drawBg(acc);
+  drawWatermark('PLAYGROUND',acc);
+
+  ctx.save();
+  ctx.translate(-pg.camX,0);
+
+  // Platforms
+  for(const pl of PG_PLATFORMS){
+    if(pl.x+pl.w<pg.camX-20||pl.x>pg.camX+W+20) continue;
+    drawPgPlatform(pl);
+  }
+
+  // World text labels
+  ctx.font='bold 8px monospace'; ctx.textAlign='center';
+  for(const t of PG_TEXTS){
+    if(t.x<pg.camX-80||t.x>pg.camX+W+80) continue;
+    ctx.fillStyle=t.col;
+    ctx.fillText(t.txt,t.x,t.y);
+  }
+
+  // Collectibles
+  for(const c of pg.collectibles){
+    if(!c.col) drawPgCollectible(c);
+  }
+
+  // Enemies
+  for(const en of pg.enemies){
+    if(en.x+en.w<pg.camX-20||en.x>pg.camX+W+20) continue;
+    drawEnemy(en);
+  }
+
+  // Projectiles
+  for(const proj of pg.projectiles){
+    ctx.save(); gl('#f59e0b',10);
+    ctx.fillStyle='#f59e0b';
+    ctx.fillRect(proj.x,proj.y,proj.w,proj.h);
+    ngl(); ctx.restore();
+  }
+
+  // Particles
+  for(const p of pg.particles){
+    ctx.globalAlpha=p.life/40;
+    ctx.fillStyle=p.col;
+    ctx.fillRect(p.x-3,p.y-3,6,6);
+  }
+  ctx.globalAlpha=1;
+
+  // Player
+  drawPlayer();
+
+  ctx.restore();
+
+  // Screen-space HUD
+  drawPgHud();
+  drawProgressBar();
+
+  // Invincibility flash
+  if(pg.invFrames>0&&Math.floor(pg.invFrames/6)%2===0){
+    ctx.fillStyle='rgba(239,68,68,0.10)'; ctx.fillRect(0,0,W,H);
   }
 }
 
 // ══════════════════════════════════════════════════════════════ LOOP ════════
-function loop() {
+function loop(){
   requestAnimationFrame(loop);
 
   if(transTo){
     alpha=Math.max(alpha-0.07,0);
     if(alpha<=0){
       curRoom=transTo; resetP(transX,380); transTo=null; activeCard=null;
+      if(curRoom==='playground') resetPlayground();
     }
   } else if(!showEnd){
     alpha=Math.min(alpha+0.05,1);
-    if(alpha>0.05) tick();
+    if(alpha>0.05){
+      if(curRoom==='playground') tickPlayground();
+      else tick();
+    }
   }
 
-  const rm=ROOM_MAP[curRoom];
-  drawBg(rm.accent);
-  drawWatermark(rm.name,rm.accent);
+  // Scale everything to fill the viewport
+  ctx.save();
+  ctx.scale(C.width/W, C.height/H);
 
-  for(const pl of rm.platforms) drawPlatform(pl,rm.accent);
-  drawEdgeArrow(rm);
-  for(const o of rm.overlays) drawOverlay(o);
-  drawPlayer();
-  drawInfoCard(activeCard,rm.accent);
-
-  if(activeCard){
-    ctx.save(); gl(activeCard.accent||rm.accent,30);
-    ctx.strokeStyle=activeCard.accent||rm.accent; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.roundRect(activeCard.x,activeCard.y-60,activeCard.w,72,3); ctx.stroke();
-    ngl(); ctx.restore();
+  if(curRoom==='playground'){
+    drawPlayground();
+  } else {
+    const rm=ROOM_MAP[curRoom];
+    drawBg(rm.accent);
+    drawWatermark(rm.name,rm.accent);
+    for(const pl of rm.platforms) drawPlatform(pl,rm.accent);
+    drawEdgeArrow();
+    for(const o of rm.overlays) drawOverlay(o);
+    drawPlayer();
+    drawInfoCard(activeCard,rm.accent);
+    if(activeCard){
+      ctx.save(); gl(activeCard.accent||rm.accent,30);
+      ctx.strokeStyle=activeCard.accent||rm.accent; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.roundRect(activeCard.x,activeCard.y-60,activeCard.w,72,3); ctx.stroke();
+      ngl(); ctx.restore();
+    }
+    drawProgressBar();
+    drawHud(rm);
   }
 
-  drawProgressBar(rm);
-  drawHud(rm);
-  if(alpha<1){ctx.fillStyle=`rgba(0,0,0,${1-alpha})`;ctx.fillRect(0,0,W,H);}
+  if(alpha<1){ ctx.fillStyle=`rgba(0,0,0,${1-alpha})`; ctx.fillRect(0,0,W,H); }
+
+  ctx.restore();
 }
 
 // ══════════════════════════════════════════════════════════════ NAV ══════
-function jumpTo(roomId) {
+function jumpTo(roomId){
   document.getElementById('end-overlay').classList.remove('show');
   showEnd=false;
   curRoom=roomId; resetP(60,380); alpha=0;
+  if(roomId==='playground') resetPlayground();
 }
 
 loop();
