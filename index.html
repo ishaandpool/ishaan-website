@@ -127,8 +127,9 @@ const ctx = C.getContext('2d');
 const W = 900, H = 500;
 
 function resize() {
-  C.width  = window.innerWidth;
-  C.height = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  C.width  = Math.round(window.innerWidth  * dpr);
+  C.height = Math.round(window.innerHeight * dpr);
   C.style.width  = window.innerWidth  + 'px';
   C.style.height = window.innerHeight + 'px';
 }
@@ -216,10 +217,10 @@ const ALL_ROOMS = [
    ],
    overlays:[
      {x:450,y:80, txt:'ISHAAN SHARMA', font:'bold 40px monospace', color:'#F7374F', glow:28},
-     {x:450,y:115,txt:'developer  ·  designer  ·  builder', font:'12px monospace', color:'#555'},
-     {x:450,y:148,txt:"CS & IE  ·  Virginia Tech '30  ·  Chicago, IL", font:'10px monospace', color:'#3a3a3a'},
-     {x:450,y:195,txt:'// Walk right to explore my portfolio →', font:'11px monospace', color:'#2a2a2a'},
-     {x:450,y:475,txt:'STATUS: OPEN TO WORK  ·  SYS: PORTFOLIO.2026', font:'9px monospace', color:'#1e1e1e'},
+     {x:450,y:115,txt:'developer  ·  designer  ·  builder', font:'12px monospace', color:'#888'},
+     {x:450,y:148,txt:"CS & IE  ·  Virginia Tech '30  ·  Chicago, IL", font:'10px monospace', color:'#666'},
+     {x:450,y:195,txt:'// Walk right to explore my portfolio →', font:'11px monospace', color:'#4a4a4a'},
+     {x:450,y:475,txt:'STATUS: OPEN TO WORK  ·  SYS: PORTFOLIO.2026', font:'9px monospace', color:'#333'},
    ]},
 
   // ── 1 ABOUT ─────────────────────────────────────────────────────────────
@@ -243,7 +244,7 @@ const ALL_ROOMS = [
      {x:450,y:95, txt:"i'm a curious creator passionate about technology,", font:'12px monospace', color:'#ccc'},
      {x:450,y:114,txt:"design, and music. whether i'm coding, writing, or", font:'12px monospace', color:'#ccc'},
      {x:450,y:133,txt:'exploring new sounds — i aim to make tech more accessible.', font:'12px monospace', color:'#aaa'},
-     {x:450,y:168,txt:'// Jump on the skill tags and education platforms below', font:'9.5px monospace', color:'#2e2e2e'},
+     {x:450,y:168,txt:'// Jump on the skill tags and education platforms below', font:'9.5px monospace', color:'#555'},
      {x:450,y:253,txt:'EDUCATION', font:'bold 10px monospace', color:'#f59e0b'},
      {x:450,y:350,txt:'SKILLS & TECH', font:'bold 10px monospace', color:'#f59e0b'},
    ]},
@@ -276,7 +277,7 @@ const ALL_ROOMS = [
    ],
    overlays:[
      {x:450,y:26,txt:'WORK EXPERIENCE', font:'bold 20px monospace', color:'#22c55e', glow:16},
-     {x:450,y:46,txt:'Jump on a card · newest at the top · oldest at the floor · climb the stack!', font:'9px monospace', color:'#1c3a1c'},
+     {x:450,y:46,txt:'Jump on a card · newest at the top · oldest at the floor · climb the stack!', font:'9px monospace', color:'#2e5a2e'},
    ]},
 
   // ── 3 PROJECTS ──────────────────────────────────────────────────────────
@@ -301,7 +302,7 @@ const ALL_ROOMS = [
    ],
    overlays:[
      {x:450,y:28,txt:'PROJECTS', font:'bold 22px monospace', color:'#a78bfa', glow:18},
-     {x:450,y:50,txt:'Land on a project to read · click the card to visit the live demo', font:'10px monospace', color:'#1e1032'},
+     {x:450,y:50,txt:'Land on a project to read · click the card to visit the live demo', font:'10px monospace', color:'#4a3070'},
    ]},
 
   // ── 4 CONTACT ───────────────────────────────────────────────────────────
@@ -320,9 +321,9 @@ const ALL_ROOMS = [
      {x:450,y:118,txt:'✉  ishaans@vt.edu', font:'14px monospace', color:'#ddd'},
      {x:450,y:148,txt:'📞  +1 (630) 853-7916', font:'13px monospace', color:'#bbb'},
      {x:450,y:176,txt:'📍  Chicago, IL', font:'13px monospace', color:'#bbb'},
-     {x:450,y:212,txt:'GitHub: ishaandpool  ·  LinkedIn: ishaan-sharma-02613b35a  ·  IG: ishaanfrrr', font:'9.5px monospace', color:'#444'},
-     {x:450,y:245,txt:'always open to new opportunities, collaborations,', font:'10px monospace', color:'#333'},
-     {x:450,y:262,txt:'or even just a good conversation.', font:'10px monospace', color:'#333'},
+     {x:450,y:212,txt:'GitHub: ishaandpool  ·  LinkedIn: ishaan-sharma-02613b35a  ·  IG: ishaanfrrr', font:'9.5px monospace', color:'#666'},
+     {x:450,y:245,txt:'always open to new opportunities, collaborations,', font:'10px monospace', color:'#555'},
+     {x:450,y:262,txt:'or even just a good conversation.', font:'10px monospace', color:'#555'},
    ]},
 
   // ── 5 HOBBIES ───────────────────────────────────────────────────────────
@@ -375,7 +376,7 @@ const ALL_ROOMS = [
    ],
    overlays:[
      {x:450,y:26,txt:'HOBBIES & INTERESTS', font:'bold 18px monospace', color:'#f97316', glow:18},
-     {x:450,y:46,txt:'Explore freely · there are secrets up high · walk right to reach the PLAYGROUND →', font:'9px monospace', color:'#301808'},
+     {x:450,y:46,txt:'Explore freely · there are secrets up high · walk right to reach the PLAYGROUND →', font:'9px monospace', color:'#5a3010'},
    ]},
 
   // ── 6 PLAYGROUND ────────────────────────────────────────────────────────
