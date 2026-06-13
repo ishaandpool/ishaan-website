@@ -39,10 +39,47 @@ canvas { display:block; width:100vw; height:100vh; }
 .nb-orange:hover { background:rgba(249,115,22,.12); }
 .nb-pink   { color:#ec4899; border-color:rgba(236,72,153,.5); }
 .nb-pink:hover   { background:rgba(236,72,153,.12); }
+
+/* Mobile touch controls */
+#mobile-controls {
+  display:none; position:fixed; bottom:0; left:0; right:0;
+  padding:16px 22px 24px; pointer-events:none; z-index:5;
+  justify-content:space-between; align-items:flex-end;
+}
+#dpad, #action-btns { display:flex; gap:10px; pointer-events:all; }
+.ctrl-btn {
+  width:62px; height:62px; border-radius:50%;
+  background:rgba(6,6,8,0.72); border:1.5px solid rgba(255,255,255,0.13);
+  color:rgba(255,255,255,0.55); font-size:22px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; user-select:none; touch-action:none;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .08s, border-color .08s, color .08s;
+}
+.ctrl-btn.pressed {
+  background:rgba(247,55,79,0.22); border-color:rgba(247,55,79,0.55); color:#F7374F;
+}
+#btn-fire {
+  display:none;
+  border-color:rgba(245,158,11,0.25); color:rgba(245,158,11,0.55);
+}
+#btn-fire.visible { display:flex; }
+#btn-fire.pressed { background:rgba(245,158,11,0.22); border-color:rgba(245,158,11,0.55); color:#f59e0b; }
 </style>
 </head>
 <body>
 <canvas id="c" tabindex="0" style="outline:none;"></canvas>
+
+<div id="mobile-controls">
+  <div id="dpad">
+    <button class="ctrl-btn" id="btn-left">&#9664;</button>
+    <button class="ctrl-btn" id="btn-right">&#9654;</button>
+  </div>
+  <div id="action-btns">
+    <button class="ctrl-btn" id="btn-fire">&#9889;</button>
+    <button class="ctrl-btn" id="btn-jump">&#9650;</button>
+  </div>
+</div>
+
 <div id="end-overlay">
   <h2>🎉 You explored everything!</h2>
   <p>You walked through Ishaan's intro, background, work experience,<br>projects, contact info, hobbies, and survived the playground. Respect.</p>
@@ -58,6 +95,31 @@ canvas { display:block; width:100vw; height:100vh; }
 </div>
 
 <script>
+// ══════════════════════════════════════════════════════════ MOBILE CONTROLS ══
+(function(){
+  const mc = document.getElementById('mobile-controls');
+  if('ontouchstart' in window || navigator.maxTouchPoints > 0) mc.style.display = 'flex';
+
+  function bind(id, key){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const on  = e => { e.preventDefault(); K[key]=true;  el.classList.add('pressed');    };
+    const off = e => { e.preventDefault(); K[key]=false; el.classList.remove('pressed'); };
+    el.addEventListener('touchstart',  on,  {passive:false});
+    el.addEventListener('touchend',    off, {passive:false});
+    el.addEventListener('touchcancel', off, {passive:false});
+    el.addEventListener('mousedown',   on);
+    el.addEventListener('mouseup',     off);
+    el.addEventListener('mouseleave',  off);
+  }
+  window._bindMobile = function(){
+    bind('btn-left',  'ArrowLeft');
+    bind('btn-right', 'ArrowRight');
+    bind('btn-jump',  'ArrowUp');
+    bind('btn-fire',  'KeyX');
+  };
+})();
+
 // ══════════════════════════════════════════════════════════════════ SETUP ══
 const C = document.getElementById('c');
 const ctx = C.getContext('2d');
@@ -72,6 +134,7 @@ resize();
 
 C.focus();
 C.addEventListener('mousedown', () => C.focus());
+window._bindMobile && window._bindMobile();
 document.addEventListener('keydown', e => {
   if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyS','KeyX'].includes(e.code))
     e.preventDefault();
@@ -249,7 +312,7 @@ const ALL_ROOMS = [
    overlays:[
      {x:450,y:28, txt:"CONTACT", font:'bold 22px monospace', color:'#4FA8FF', glow:18},
      {x:450,y:55, txt:"let's work together", font:'12px monospace', color:'#888'},
-     {x:450,y:118,txt:'✉  ishaan@vt.edu', font:'14px monospace', color:'#ddd'},
+     {x:450,y:118,txt:'✉  ishaans@vt.edu', font:'14px monospace', color:'#ddd'},
      {x:450,y:148,txt:'📞  +1 (630) 853-7916', font:'13px monospace', color:'#bbb'},
      {x:450,y:176,txt:'📍  Chicago, IL', font:'13px monospace', color:'#bbb'},
      {x:450,y:212,txt:'GitHub: ishaandpool  ·  LinkedIn: ishaan-sharma-02613b35a  ·  IG: ishaanfrrr', font:'9.5px monospace', color:'#444'},
@@ -299,7 +362,7 @@ const ALL_ROOMS = [
       detail:"VS Code with Tokyo Night theme · Figma for design · Vercel for deploys · Arc Browser · Notion for everything else."},
      {x:200,y:128,w:180,h:12,
       label:'🏆 Achievement Unlocked', org:"You climbed to the top!", date:'Right now',
-      detail:"Seriously though — thank you for exploring this far. I put a lot into this portfolio. Reach out anytime: ishaan@vt.edu"},
+      detail:"Seriously though — thank you for exploring this far. I put a lot into this portfolio. Reach out anytime: ishaans@vt.edu"},
      {x:520,y:110,w:160,h:12,
       label:'🌟 Easter Egg', org:'You found it', date:'👀',
       detail:"Okay you REALLY went looking. Bonus fact: this entire portfolio is a canvas platformer built in vanilla JS. No frameworks. Pure fun."},
@@ -933,6 +996,10 @@ function loop(){
   if(alpha<1){ ctx.fillStyle=`rgba(0,0,0,${1-alpha})`; ctx.fillRect(0,0,W,H); }
 
   ctx.restore();
+
+  // Show fire button only when weapon is active in playground
+  const _fb = document.getElementById('btn-fire');
+  if(_fb){ if(curRoom==='playground'&&pg.hasWeapon) _fb.classList.add('visible'); else _fb.classList.remove('visible'); }
 }
 
 // ══════════════════════════════════════════════════════════════ NAV ══════
