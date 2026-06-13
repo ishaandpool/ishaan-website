@@ -1,513 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ishaan Sharma</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ishaan Sharma — Portfolio</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; background:#060608; overflow:hidden;
+             display:flex; flex-direction:column; align-items:center; justify-content:center; }
+canvas { display:block; border:1px solid rgba(247,55,79,0.15);
+         box-shadow:0 0 60px rgba(247,55,79,0.08), 0 0 120px rgba(0,0,0,0.8); }
+
+/* End navigation overlay */
+#end-overlay {
+  display:none; position:absolute; flex-direction:column; align-items:center; gap:18px;
+  background:rgba(6,6,8,0.97); border:1px solid rgba(247,55,79,0.3);
+  border-radius:10px; padding:32px 40px; max-width:520px; text-align:center;
+  box-shadow:0 0 40px rgba(247,55,79,0.12);
+}
+#end-overlay.show { display:flex; }
+#end-overlay h2 { font-family:monospace; font-size:22px; font-weight:700; color:#F7374F;
+                   text-shadow:0 0 20px rgba(247,55,79,0.4); }
+#end-overlay p  { font-family:monospace; font-size:11px; color:#555; line-height:1.6; }
+.nav-btns { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
+.nav-btn { font-family:monospace; font-size:10px; font-weight:700; letter-spacing:.5px;
+           padding:9px 16px; border-radius:5px; border:1px solid; cursor:pointer;
+           background:none; transition:all .15s; }
+.nav-btn:hover { opacity:.85; }
+.nb-red   { color:#F7374F; border-color:rgba(247,55,79,.5); }
+.nb-red:hover   { background:rgba(247,55,79,.12); }
+.nb-amber { color:#f59e0b; border-color:rgba(245,158,11,.5); }
+.nb-amber:hover { background:rgba(245,158,11,.12); }
+.nb-green { color:#22c55e; border-color:rgba(34,197,94,.5); }
+.nb-green:hover { background:rgba(34,197,94,.12); }
+.nb-purple{ color:#a78bfa; border-color:rgba(167,139,250,.5); }
+.nb-purple:hover{ background:rgba(167,139,250,.12); }
+.nb-blue  { color:#4FA8FF; border-color:rgba(79,168,255,.5); }
+.nb-blue:hover  { background:rgba(79,168,255,.12); }
+.nb-orange{ color:#f97316; border-color:rgba(249,115,22,.5); }
+.nb-orange:hover{ background:rgba(249,115,22,.12); }
+</style>
 </head>
 <body>
+<canvas id="c" width="900" height="500" tabindex="0" style="outline:none;position:relative;z-index:1"></canvas>
+<div id="end-overlay">
+  <h2>🎉 You explored everything!</h2>
+  <p>You've walked through Ishaan's intro, background, work experience,<br>projects, contact info, and hobbies. Nice job making it all the way.</p>
+  <div class="nav-btns">
+    <button class="nav-btn nb-red"    onclick="jumpTo('intro')">↩ Start Over</button>
+    <button class="nav-btn nb-amber"  onclick="jumpTo('about')">About Me</button>
+    <button class="nav-btn nb-green"  onclick="jumpTo('work')">Work Exp</button>
+    <button class="nav-btn nb-purple" onclick="jumpTo('projects')">Projects</button>
+    <button class="nav-btn nb-blue"   onclick="jumpTo('contact')">Contact</button>
+    <button class="nav-btn nb-orange" onclick="jumpTo('hobbies')">↩ Hobbies</button>
+  </div>
+</div>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="#home">ishaan.</a>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">home</a></li>
-                <li><a href="#about" class="nav-link">about</a></li>
-                <li><a href="#geocycle" class="nav-link nav-link-geo">geocycle <span class="geo-dot"></span></a></li>
-                <li><a href="#projects" class="nav-link">projects</a></li>
-                <li><a href="#cv" class="nav-link">cv</a></li>
-                <li><a href="#contact" class="nav-link">contact</a></li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
+<script>
+// ══════════════════════════════════════════════════════════════════ SETUP ══
+const C = document.getElementById('c');
+const ctx = C.getContext('2d');
+const W = 900, H = 500;
 
-    <!-- Hero -->
-    <section id="home" class="hero">
-        <div class="hero-bg">
-            <canvas class="hero-canvas" id="hero-canvas"></canvas>
-            <div class="hero-grid-bg"></div>
-            <div class="hero-scanlines"></div>
-            <div class="accent-rail"></div>
-            <div class="orb orb-1" data-speed="0.18"></div>
-            <div class="orb orb-2" data-speed="0.15"></div>
-        </div>
-        <div class="hero-status-pill">
-            <span class="hero-status-dot"></span>
-            <span class="hero-status-text">ONLINE</span>
-        </div>
-        <div class="hero-container">
-            <div class="terminal-bar">
-                <span class="tdot tdot-r"></span>
-                <span class="tdot tdot-y"></span>
-                <span class="tdot tdot-g"></span>
-                <span class="terminal-title">ishaan@portfolio ~ %</span>
-            </div>
-            <p class="hero-prompt-line"><span class="hero-prompt">❯ </span>whoami && cat intro.txt</p>
-            <h1 class="hero-name">
-                <span class="name-solid">i'm</span>
-                <span class="name-outline">ishaan</span>
-            </h1>
-            <p class="hero-sub">developer <span class="sep">·</span> designer <span class="sep">·</span> builder</p>
-            <div class="hero-btns">
-                <a href="#projects" class="btn btn-primary">view my work</a>
-                <a href="#contact" class="btn btn-outline">get in touch</a>
-            </div>
-        </div>
-        <div class="hero-corner-info">
-            SYS: PORTFOLIO.2026<br>
-            LOC: CHICAGO, IL<br>
-            STATUS: OPEN
-        </div>
-        <div class="scroll-hint">
-            <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
-            <span>scroll</span>
-        </div>
-    </section>
+C.focus();
+C.addEventListener('mousedown', () => C.focus());
+document.addEventListener('keydown', e => {
+  if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyS'].includes(e.code))
+    e.preventDefault();
+  K[e.code] = true;
+});
+document.addEventListener('keyup', e => { K[e.code] = false; });
+const K = {};
 
-    <!-- Skills Ticker -->
-    <div class="ticker-section">
-        <div class="ticker-badge">
-            <span class="ticker-badge-dot"></span>
-            SKILLS
-        </div>
-        <div class="ticker-track">
-            <div class="ticker-inner">
-                <div class="ticker-item"><span class="ticker-highlight">JavaScript</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">React<span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Next.js<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">UI/UX Design</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Python<span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Node.js<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">C#</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Lua<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">AI Vision</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Virginia Tech '30<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">300+ devices refurbished</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Open to Work<span class="ticker-sep">//</span></div>
-                <!-- Duplicate for seamless loop -->
-                <div class="ticker-item"><span class="ticker-highlight">JavaScript</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">React<span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Next.js<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">UI/UX Design</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Python<span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Node.js<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">C#</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Lua<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">AI Vision</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Virginia Tech '30<span class="ticker-sep">//</span></div>
-                <div class="ticker-item"><span class="ticker-highlight">300+ devices refurbished</span><span class="ticker-sep">//</span></div>
-                <div class="ticker-item">Open to Work<span class="ticker-sep">//</span></div>
-            </div>
-        </div>
-    </div>
+// ══════════════════════════════════════════════════════════════════ PLAYER ══
+const P = { x:60, y:380, vx:0, vy:0, w:14, h:22, ground:false, dir:1, frame:0, ft:0 };
+const GRAV=0.50, SPD=5.0, JMP=-11.5, FRIC=0.76;
 
-    <!-- About -->
-    <section id="about" class="about">
-        <div class="section-parallax-bg" data-parallax-section></div>
-        <div class="container">
-            <p class="eyebrow">who i am</p>
-            <h2 class="section-title">About Me</h2>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>i'm ishaan sharma, a curious creator passionate about technology, design, and music. from building innovative apps to refurbishing tech for underserved communities, i aim to bridge the digital divide and make technology more accessible.</p>
-                    <p>whether i'm coding, writing, or exploring new sounds, i'm driven by the excitement of turning ideas into impactful experiences. i believe in using creativity and technical skill to spark meaningful change in the world around me.</p>
-                    <div class="skills-block">
-                        <h3>skills & technologies</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">JavaScript</span>
-                            <span class="skill-tag">React</span>
-                            <span class="skill-tag">Next.js</span>
-                            <span class="skill-tag">C#</span>
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Node.js</span>
-                            <span class="skill-tag">UI/UX Design</span>
-                            <span class="skill-tag">Lua</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-side">
-                    <div class="avatar-wrap">
-                        <div class="avatar-ring">
-                            <div class="avatar-inner">
-                                <img src="ishaanheadshot.jpg" alt="Ishaan Sharma">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-row">
-                        <div class="stat-card">
-                            <span class="stat-num">3+</span>
-                            <span class="stat-label">years building</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num">10+</span>
-                            <span class="stat-label">projects shipped</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+function resetP(x,y) { P.x=x;P.y=y;P.vx=0;P.vy=0;P.ground=false;P.dir=1;P.frame=0;P.ft=0; }
 
-    <!-- GeoCycle Featured Section -->
-    <section id="geocycle" class="geocycle-section">
-        <div class="gc-bg">
-            <div class="gc-orb gc-orb-1" data-speed="0.2"></div>
-            <div class="gc-orb gc-orb-2" data-speed="0.12"></div>
-        </div>
-        <div class="container">
-            <div class="gc-inner">
-                <div class="gc-text">
-                    <p class="eyebrow gc-eyebrow">featured project</p>
-                    <h2 class="gc-title">Geo<span class="gc-accent">Cycle</span></h2>
-                    <p class="gc-desc">AI-powered waste classifier. Snap a photo of any item and get an instant verdict — <strong>trash</strong>, <strong>recycling</strong>, or <strong>compost</strong>. Making sustainability effortless, one scan at a time.</p>
-                    <div class="gc-tags">
-                        <span class="gc-tag"><i class="fas fa-brain"></i> AI Vision</span>
-                        <span class="gc-tag"><i class="fas fa-leaf"></i> Sustainability</span>
-                        <span class="gc-tag"><i class="fab fa-react"></i> Next.js</span>
-                        <span class="gc-tag"><i class="fas fa-camera"></i> Image Analysis</span>
-                    </div>
-                    <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="btn btn-green">
-                        Try GeoCycle <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="gc-embed">
-                    <div class="browser-chrome">
-                        <div class="browser-dots">
-                            <span class="bdot bdot-red"></span>
-                            <span class="bdot bdot-yellow"></span>
-                            <span class="bdot bdot-green"></span>
-                        </div>
-                        <div class="browser-url">geocycle.vercel.app/waste</div>
-                    </div>
-                    <div class="embed-body">
-                        <iframe
-                            id="gc-frame"
-                            src="https://geocycle.vercel.app/waste"
-                            title="GeoCycle — Waste Identifier"
-                            frameborder="0"
-                            loading="lazy"
-                            allowfullscreen>
-                        </iframe>
-                        <div class="embed-fallback" id="embed-fallback">
-                            <div class="fallback-icon"><i class="fas fa-recycle"></i></div>
-                            <p>Open the app to try it</p>
-                            <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="btn btn-green-sm">
-                                Open GeoCycle
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+function physicsStep(platforms, clampL=true, clampR=true) {
+  const L=K['ArrowLeft']||K['KeyA'], R=K['ArrowRight']||K['KeyD'];
+  const J=K['ArrowUp']||K['KeyW']||K['Space'];
+  if(L){P.vx=Math.max(P.vx-1.7,-SPD);P.dir=-1;}
+  if(R){P.vx=Math.min(P.vx+1.7, SPD);P.dir= 1;}
+  P.vx*=FRIC; if(Math.abs(P.vx)<0.06)P.vx=0;
+  P.x+=P.vx;
+  if(clampL&&P.x<0){P.x=0;P.vx=0;}
+  if(clampR&&P.x+P.w>W){P.x=W-P.w;P.vx=0;}
+  P.vy+=GRAV; P.y+=P.vy; P.ground=false;
+  for(const pl of platforms){
+    const prevB=P.y+P.h-P.vy;
+    if(P.x+P.w>pl.x&&P.x<pl.x+pl.w&&P.y+P.h>=pl.y&&prevB<=pl.y+6&&P.vy>=0){
+      P.y=pl.y-P.h;P.vy=0;P.ground=true;
+    }
+  }
+  if(P.y<0){P.y=0;if(P.vy<0)P.vy=0;}
+  if(J&&P.ground){P.vy=JMP;P.ground=false;}
+  if(Math.abs(P.vx)>0.5&&P.ground){P.ft++;if(P.ft>7){P.frame=(P.frame+1)%4;P.ft=0;}}
+  else P.frame=0;
+}
 
-    <!-- Projects -->
-    <section id="projects" class="projects">
-        <div class="section-parallax-bg" data-parallax-section></div>
-        <div class="container">
-            <p class="eyebrow">what i've built</p>
-            <h2 class="section-title">Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card reveal">
-                    <span class="card-index">[01]</span>
-                    <div class="proj-preview">
-                        <div class="proj-browser-bar">
-                            <div class="browser-dots">
-                                <span class="bdot bdot-red"></span>
-                                <span class="bdot bdot-yellow"></span>
-                                <span class="bdot bdot-green"></span>
-                            </div>
-                            <div class="proj-url-bar">geocycle.vercel.app/waste</div>
-                        </div>
-                        <div class="proj-iframe-wrap">
-                            <iframe src="https://geocycle.vercel.app/waste" title="GeoCycle" loading="lazy" frameborder="0"></iframe>
-                            <div class="proj-iframe-fallback">
-                                <i class="fas fa-recycle"></i>
-                                <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="btn-green-sm">Open GeoCycle</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <h3>GeoCycle</h3>
-                        <p>AI waste identifier — takes a photo and classifies items as trash, recycling, or compost using computer vision.</p>
-                        <div class="proj-tags">
-                            <span>Next.js</span>
-                            <span>AI Vision</span>
-                            <span>Vercel</span>
-                        </div>
-                        <div class="proj-links">
-                            <a href="https://geocycle.vercel.app/waste" target="_blank" class="proj-link">Live Demo →</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card reveal">
-                    <span class="card-index">[02]</span>
-                    <div class="proj-preview">
-                        <div class="proj-browser-bar">
-                            <div class="browser-dots">
-                                <span class="bdot bdot-red"></span>
-                                <span class="bdot bdot-yellow"></span>
-                                <span class="bdot bdot-green"></span>
-                            </div>
-                            <div class="proj-url-bar">caesar-cipher-alpha.vercel.app</div>
-                        </div>
-                        <div class="proj-iframe-wrap">
-                            <iframe src="https://caesar-cipher-alpha.vercel.app/" title="Caesar Cipher Decoder" loading="lazy" frameborder="0"></iframe>
-                            <div class="proj-iframe-fallback">
-                                <i class="fas fa-key"></i>
-                                <a href="https://caesar-cipher-alpha.vercel.app/" target="_blank" rel="noopener" class="btn-green-sm">Open Caesar Cipher</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <h3>Caesar Cipher Decoder</h3>
-                        <p>Frequency analysis-powered cipher decoder — paste any Caesar-encoded text and get an instant decode using letter frequency statistics.</p>
-                        <div class="proj-tags">
-                            <span>React</span>
-                            <span>HTML</span>
-                        </div>
-                        <div class="proj-links">
-                            <a href="https://caesar-cipher-alpha.vercel.app/" target="_blank" class="proj-link">Live Demo →</a>
-                            <a href="https://github.com/ishaandpool/caesar-cipher" target="_blank" class="proj-link">GitHub →</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card reveal">
-                    <span class="card-index">[03]</span>
-                    <div class="proj-preview">
-                        <div class="proj-browser-bar">
-                            <div class="browser-dots">
-                                <span class="bdot bdot-red"></span>
-                                <span class="bdot bdot-yellow"></span>
-                                <span class="bdot bdot-green"></span>
-                            </div>
-                            <div class="proj-url-bar">oscarai.ca</div>
-                        </div>
-                        <div class="proj-iframe-wrap">
-                            <iframe src="https://oscarai.ca" title="OscarAI" loading="lazy" frameborder="0"></iframe>
-                            <div class="proj-iframe-fallback">
-                                <i class="fas fa-trophy"></i>
-                                <a href="https://oscarai.ca" target="_blank" rel="noopener" class="btn-green-sm">Open Site</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <h3>OscarAI</h3>
-                        <p>Designed the full website for an AI-powered trash sorting startup. Clean, high-converting design for a nationally recognized company.</p>
-                        <div class="proj-tags">
-                            <span>UI/UX Design</span>
-                            <span>Web Design</span>
-                        </div>
-                        <div class="award-badges">
-                            <span class="award-badge"><i class="fas fa-medal"></i> Ingenious</span>
-                            <span class="award-badge"><i class="fas fa-star"></i> VIRSF+</span>
-                        </div>
-                        <div class="proj-links">
-                            <a href="https://oscarai.ca" target="_blank" class="proj-link">Live Site →</a>
-                            <a href="https://github.com/ItzXizZ/oscarai-website" target="_blank" class="proj-link">GitHub →</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+// ══════════════════════════════════════════════════════════════════ ROOMS ══
+const ALL_ROOMS = [
+  // ── 0 INTRO ─────────────────────────────────────────────────────────────
+  {id:'intro', name:'INTRO', accent:'#F7374F',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:180,y:350,w:120,h:12},
+     {x:420,y:280,w:80, h:12},
+     {x:620,y:350,w:120,h:12},
+     {x:700,y:215,w:100,h:12},
+   ],
+   overlays:[
+     {x:450,y:80, txt:'ISHAAN SHARMA', font:'bold 40px monospace', color:'#F7374F', glow:28},
+     {x:450,y:115,txt:'developer  ·  designer  ·  builder', font:'12px monospace', color:'#555'},
+     {x:450,y:148,txt:"CS & IE  ·  Virginia Tech '30  ·  Chicago, IL", font:'10px monospace', color:'#3a3a3a'},
+     {x:450,y:195,txt:'// Walk right to explore my portfolio →', font:'11px monospace', color:'#2a2a2a'},
+     {x:450,y:475,txt:'STATUS: OPEN TO WORK  ·  SYS: PORTFOLIO.2026', font:'9px monospace', color:'#1e1e1e'},
+   ]},
 
-    <!-- CV -->
-    <section id="cv" class="cv">
-        <div class="section-parallax-bg" data-parallax-section></div>
-        <div class="container">
-            <p class="eyebrow">my journey</p>
-            <h2 class="section-title">Experience & Education</h2>
-            <div class="cv-cols">
-                <div class="cv-col">
-                    <h3 class="cv-col-title"><i class="fas fa-briefcase"></i> Experience & Leadership</h3>
-                    <div class="timeline">
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Jul 2025 – Present</span>
-                                <h4>Chief Management Officer</h4>
-                                <p class="t-company">Orbyt</p>
-                                <p>Directing 175+ interns from Duke, Stanford, Columbia, and UMich across growth, software, and product engineering teams — delivered 2 full MVPs on schedule.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Jun 2025 – Present</span>
-                                <h4>Software Development Intern</h4>
-                                <p class="t-company">OscarAI</p>
-                                <p>Selected as 1 of 3 interns from 200+ applicants. Designed and iterated on the official website for an award-winning environmental sustainability startup.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Nov 2024 – Present</span>
-                                <h4>Program Coordinator</h4>
-                                <p class="t-company">Build-A-Biz</p>
-                                <p>200+ volunteer hours coordinating youth entrepreneurship programs; designed and led workshops on business fundamentals for students from diverse backgrounds.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Aug 2024 – May 2026</span>
-                                <h4>Chief Design Officer</h4>
-                                <p class="t-company">Affinity — Virtual Enterprises International</p>
-                                <p>Developed the product line's visual identity and company website; represented Affinity at VEI's national competition contributing to pitch presentations and design showcases.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Aug 2023 – Present</span>
-                                <h4>Co-President</h4>
-                                <p class="t-company">Power Up Project</p>
-                                <p>Oversaw refurbishment and redistribution of 300+ devices ($60,000+ value) to underserved communities. 600+ volunteer hours leading a student-run nonprofit addressing the digital divide.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Jun 2022 – Present</span>
-                                <h4>Lead Sensei</h4>
-                                <p class="t-company">Code Ninjas</p>
-                                <p>1,000+ hours teaching 300+ students ages 6–14 in JavaScript, C#, Lua, and block-based coding. Entrusted with one of only three center keys; oversaw daily operations and mentored junior staff.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">Dec 2018 – Dec 2024</span>
-                                <h4>Club President</h4>
-                                <p class="t-company">Toastmasters International (TED-Partnered)</p>
-                                <p>Active member for 6 years; served 2 years as President overseeing operations, member engagement, and meeting execution in a TED-partnered club.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="cv-col">
-                    <h3 class="cv-col-title"><i class="fas fa-graduation-cap"></i> Education</h3>
-                    <div class="timeline">
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">2026 – 2030</span>
-                                <h4>B.S. Industrial Engineering & Computer Science</h4>
-                                <p class="t-company">Virginia Tech — Honors College</p>
-                                <p>Double major in Industrial Engineering and Computer Science. Minor in Philosophy. Honors College.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item reveal">
-                            <div class="t-marker"></div>
-                            <div class="t-content">
-                                <span class="t-date">2022 – 2026</span>
-                                <h4>High School Diploma</h4>
-                                <p class="t-company">Neuqua Valley High School</p>
-                                <p>ACT: 35 &nbsp;·&nbsp; SAT: 1480</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="cv-download">
-                <a href="#" class="btn btn-primary">Download Full CV</a>
-            </div>
-        </div>
-    </section>
+  // ── 1 ABOUT ─────────────────────────────────────────────────────────────
+  {id:'about', name:'ABOUT ME', accent:'#f59e0b',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:15, y:370,w:120,h:12,label:'JavaScript', detail:'Primary language · React · Node.js · ES2023+'},
+     {x:155,y:370,w:100,h:12,label:'Python',     detail:'AI/ML scripts · data analysis · automation'},
+     {x:275,y:370,w:70, h:12,label:'C#',         detail:'Unity / game scripting · .NET basics'},
+     {x:365,y:370,w:55, h:12,label:'Lua',        detail:'Roblox game dev · scripting engines'},
+     {x:440,y:370,w:120,h:12,label:'React/Next', detail:'Full-stack web · Vercel deploys · SSR'},
+     {x:580,y:370,w:110,h:12,label:'UI/UX',      detail:'Figma · visual systems · user-centered design'},
+     {x:710,y:370,w:100,h:12,label:'Node.js',    detail:'Backend APIs · Express · REST services'},
+     {x:80, y:278,w:320,h:12,label:'Virginia Tech — B.S. IE + CS', detail:"Honors College · Philosophy Minor · Class of 2030"},
+     {x:480,y:278,w:250,h:12,label:'Neuqua Valley High School',    detail:'2022–2026 · ACT 35 · SAT 1480'},
+     {x:200,y:195,w:160,h:12},
+     {x:540,y:195,w:160,h:12},
+   ],
+   overlays:[
+     {x:450,y:28, txt:'ABOUT ME', font:'bold 22px monospace', color:'#f59e0b', glow:18},
+     {x:450,y:95, txt:"i'm a curious creator passionate about technology,", font:'12px monospace', color:'#ccc'},
+     {x:450,y:114,txt:"design, and music. whether i'm coding, writing, or", font:'12px monospace', color:'#ccc'},
+     {x:450,y:133,txt:'exploring new sounds — i aim to make tech more accessible.', font:'12px monospace', color:'#aaa'},
+     {x:450,y:168,txt:'// Jump on the skill tags and education platforms below', font:'9.5px monospace', color:'#2e2e2e'},
+     {x:450,y:253,txt:'EDUCATION', font:'bold 10px monospace', color:'#f59e0b'},
+     {x:450,y:350,txt:'SKILLS & TECH', font:'bold 10px monospace', color:'#f59e0b'},
+   ]},
 
-    <!-- Contact -->
-    <section id="contact" class="contact">
-        <div class="section-parallax-bg" data-parallax-section></div>
-        <div class="container">
-            <p class="eyebrow">let's talk</p>
-            <h2 class="section-title">Get In Touch</h2>
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <h3>let's work together</h3>
-                    <p>always open to new opportunities and collaborations. whether you have a project in mind or just want to chat, feel free to reach out.</p>
-                    <div class="contact-methods">
-                        <div class="contact-method">
-                            <i class="fas fa-envelope"></i>
-                            <span>hello@ishaan.dev</span>
-                        </div>
-                        <div class="contact-method">
-                            <i class="fas fa-phone"></i>
-                            <span>+1 (630) 853-7916</span>
-                        </div>
-                        <div class="contact-method">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Chicago, IL</span>
-                        </div>
-                    </div>
-                    <div class="social-links">
-                        <a href="https://github.com/ishaandpool" target="_blank" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/ishaan-sharma-02613b35a/" target="_blank" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                        <a href="https://www.instagram.com/ishaanfrrr" target="_blank" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <form class="contact-form" id="contact-form">
-                    <div data-fs-success class="form-success">
-                        <i class="fas fa-check-circle"></i>
-                        Message sent! I'll get back to you soon.
-                    </div>
-                    <div data-fs-error class="form-error-global"></div>
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Your Name" required data-fs-field>
-                        <span data-fs-error="name" class="field-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" name="email" placeholder="Your Email" required data-fs-field>
-                        <span data-fs-error="email" class="field-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="subject" placeholder="Subject" required data-fs-field>
-                        <span data-fs-error="subject" class="field-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Your Message" rows="5" required data-fs-field></textarea>
-                        <span data-fs-error="message" class="field-error"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary" data-fs-submit-btn>Send Message</button>
-                </form>
-            </div>
-        </div>
-    </section>
+  // ── 2 WORK EXPERIENCE ───────────────────────────────────────────────────
+  {id:'work', name:'WORK EXPERIENCE', accent:'#22c55e',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:510,y:120,w:240,h:12,
+      label:'Chief Management Officer',      org:'Orbyt',
+      date:'Jul 2025 – Present',
+      detail:'Directing 175+ interns from Duke, Stanford, Columbia & UMich across growth, software, and product engineering · 2 MVPs delivered on schedule'},
+     {x:155,y:165,w:240,h:12,
+      label:'Software Dev Intern',           org:'OscarAI',
+      date:'Jun 2025 – Present',
+      detail:'Selected as 1 of 3 from 200+ applicants · designed and iterated on the official site for an award-winning enviro-sustainability startup'},
+     {x:480,y:215,w:240,h:12,
+      label:'Program Coordinator',           org:'Build-A-Biz',
+      date:'Nov 2024 – Present',
+      detail:'200+ volunteer hours coordinating youth entrepreneurship programs · designed and led workshops on business fundamentals for diverse students'},
+     {x:130,y:270,w:240,h:12,
+      label:'Chief Design Officer',          org:'Affinity — VEI',
+      date:'Aug 2024 – May 2026',
+      detail:"Developed product line's visual identity & website · represented Affinity at VEI national competition · pitch presentations and design showcases"},
+     {x:480,y:325,w:240,h:12,
+      label:'Co-President',                  org:'Power Up Project',
+      date:'Aug 2023 – Present',
+      detail:'Oversaw refurbishment & redistribution of 300+ devices ($60,000+ value) to underserved communities · 600+ volunteer hours · student-run nonprofit'},
+     {x:120,y:375,w:240,h:12,
+      label:'Lead Sensei',                   org:'Code Ninjas',
+      date:'Jun 2022 – Present',
+      detail:'1,000+ hrs teaching 300+ students ages 6–14 in JS, C#, Lua & block coding · one of only 3 staff with a center key · mentored junior staff'},
+     {x:430,y:420,w:240,h:12,
+      label:'Club President',                org:'Toastmasters Intl (TED-Partnered)',
+      date:'Dec 2018 – Dec 2024',
+      detail:'Active member for 6 years · served 2 years as President · oversaw operations, member engagement, and meeting execution in a TED-partnered club'},
+   ],
+   overlays:[
+     {x:450,y:26,txt:'WORK EXPERIENCE', font:'bold 20px monospace', color:'#22c55e', glow:16},
+     {x:450,y:46,txt:'Jump on a card · newest at the top · oldest at the floor · climb the stack!', font:'9px monospace', color:'#1c3a1c'},
+   ]},
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-inner">
-                <span class="footer-logo">ishaan.</span>
-                <p>&copy; 2025 Ishaan Sharma. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="https://geocycle.vercel.app/waste" target="_blank" rel="noopener" class="footer-gc-link">
-                        <i class="fas fa-recycle"></i> geocycle
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
+  // ── 3 PROJECTS ──────────────────────────────────────────────────────────
+  {id:'projects', name:'PROJECTS', accent:'#a78bfa',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:40, y:340,w:240,h:12,
+      label:'GeoCycle',
+      org:'geocycle.vercel.app/waste',
+      date:'Next.js · AI Vision · Vercel',
+      detail:'AI waste classifier — snap a photo and get an instant verdict: trash, recycling, or compost. Making sustainability effortless.'},
+     {x:330,y:272,w:240,h:12,
+      label:'Caesar Cipher Decoder',
+      org:'caesar-cipher-alpha.vercel.app',
+      date:'React · HTML · Vercel',
+      detail:'Frequency-analysis cipher decoder — paste any Caesar-encoded text and get an instant decode using letter frequency statistics.'},
+     {x:620,y:340,w:240,h:12,
+      label:'OscarAI Website',
+      org:'oscarai.ca',
+      date:'UI/UX Design · Web Design',
+      detail:'Designed the full website for an AI-powered trash sorting startup. Clean, high-converting design · Ingenious Award · VIRSF+ winner.'},
+     {x:150,y:200,w:180,h:12},
+     {x:560,y:200,w:180,h:12},
+     {x:340,y:145,w:120,h:12},
+   ],
+   overlays:[
+     {x:450,y:28,txt:'PROJECTS', font:'bold 22px monospace', color:'#a78bfa', glow:18},
+     {x:450,y:50,txt:'Land on a project to read about it', font:'10px monospace', color:'#1e1032'},
+   ]},
 
-    <script src="script.js"></script>
-    <script>
-        window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-        formspree('initForm', { formElement: '#contact-form', formId: 'xbdezgke' });
-    </script>
-    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+  // ── 4 CONTACT ───────────────────────────────────────────────────────────
+  {id:'contact', name:'CONTACT', accent:'#4FA8FF',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:200,y:320,w:500,h:12},
+     {x:100,y:240,w:240,h:12},
+     {x:560,y:240,w:240,h:12},
+     {x:280,y:165,w:200,h:12},
+     {x:420,y:100,w:180,h:12},
+   ],
+   overlays:[
+     {x:450,y:28, txt:"CONTACT", font:'bold 22px monospace', color:'#4FA8FF', glow:18},
+     {x:450,y:55, txt:"let's work together", font:'12px monospace', color:'#888'},
+     {x:450,y:118,txt:'✉  hello@ishaan.dev', font:'14px monospace', color:'#ddd'},
+     {x:450,y:148,txt:'📞  +1 (630) 853-7916', font:'13px monospace', color:'#bbb'},
+     {x:450,y:176,txt:'📍  Chicago, IL', font:'13px monospace', color:'#bbb'},
+     {x:450,y:212,txt:'GitHub: ishaandpool  ·  LinkedIn: ishaan-sharma-02613b35a  ·  IG: ishaanfrrr', font:'9.5px monospace', color:'#444'},
+     {x:450,y:245,txt:'always open to new opportunities, collaborations,', font:'10px monospace', color:'#333'},
+     {x:450,y:262,txt:'or even just a good conversation.', font:'10px monospace', color:'#333'},
+   ]},
+
+  // ── 5 HOBBIES ───────────────────────────────────────────────────────────
+  {id:'hobbies', name:'HOBBIES', accent:'#f97316',
+   platforms:[
+     {x:0,y:460,w:900,h:40},
+     {x:18, y:388,w:160,h:12,
+      label:'🎵 Music',
+      org:'Making & listening',
+      date:'Ongoing',
+      detail:'Love exploring sounds and making music. Always have headphones on — big fan of hip-hop, lo-fi, and electronic.'},
+     {x:215,y:388,w:150,h:12,
+      label:'🎮 Game Dev',
+      org:'Lua · C# · Roblox',
+      date:'Since 2018',
+      detail:'Built scripts and mini-games in Roblox (Lua) and Unity (C#). Understanding how games work from the inside out.'},
+     {x:400,y:388,w:155,h:12,
+      label:'🎨 Design for Fun',
+      org:'Figma · Adobe',
+      date:'Ongoing',
+      detail:"Visual design beyond the 9-to-5 — personal art, typography experiments, and brand design projects for fun."},
+     {x:590,y:388,w:160,h:12,
+      label:'🎤 Public Speaking',
+      org:'Toastmasters TED-partnered',
+      date:'6 years',
+      detail:"Love crafting and delivering speeches. Toastmasters member for 6 years, club president for 2. TED-partnered club."},
+     {x:785,y:388,w:105,h:12,
+      label:'✍️ Writing',
+      org:'Essays & ideas',
+      date:'Ongoing',
+      detail:"Writing as a way of thinking. Essays, reflections, and creative work. 'coding, writing, or exploring new sounds' — that's the vibe."},
+     {x:60, y:298,w:170,h:12,
+      label:'📚 Philosophy',
+      org:'Minor @ Virginia Tech',
+      date:'Academic + personal',
+      detail:"Philosophy minor because I genuinely love it. Consciousness, ethics, epistemology — what is knowledge? What's the right thing to do?"},
+     {x:285,y:285,w:165,h:12,
+      label:'💻 Side Projects',
+      org:'Late-night hacks',
+      date:'Always',
+      detail:"Always have something cooking. Curiosity-driven tinkering — if I have an idea I build it. Most don't ship, and that's okay."},
+     {x:490,y:298,w:180,h:12,
+      label:'🏙 Chicago',
+      org:'South suburbs · Chi-town',
+      date:'Home',
+      detail:"Born and raised in the Chicago area. Love the city energy, the architecture, the food, and the people. Go Bulls."},
+     {x:710,y:285,w:170,h:12,
+      label:'🌱 Community',
+      org:'Giving back',
+      date:'Ongoing',
+      detail:"Power Up Project, Build-A-Biz, Code Ninjas — helping others access tech and opportunity is genuinely what drives me."},
+     {x:110,y:210,w:160,h:12,
+      label:'🔭 Future Goals',
+      org:'The big picture',
+      date:'By 2030',
+      detail:"Start a company by 25. Make tech more accessible globally. Bridge the digital divide in a meaningful, lasting way."},
+     {x:360,y:195,w:180,h:12,
+      label:'🎯 Random Facts',
+      org:'fun stuff',
+      date:'Always true',
+      detail:"ACT 35 · can solve a Rubik's cube · night owl coder · makes playlists for every mood · favorite food is ramen."},
+     {x:620,y:210,w:165,h:12,
+      label:'🛠 Tech I Love',
+      org:'Toolbox',
+      date:'Current',
+      detail:"VS Code with Tokyo Night theme · Figma for design · Vercel for deploys · Arc Browser · Notion for everything else."},
+     {x:200,y:128,w:180,h:12,
+      label:'🏆 Achievement Unlocked',
+      org:"You climbed to the top!",
+      date:'Right now',
+      detail:"Seriously though — thank you for exploring this far. I put a lot into this portfolio. Reach out anytime: hello@ishaan.dev"},
+     {x:520,y:110,w:160,h:12,
+      label:'🌟 Easter Egg',
+      org:'You found it',
+      date:'👀',
+      detail:"Okay you REALLY went looking. Bonus fact: this entire portfolio is a canvas platformer built in vanilla JS. No frameworks. Pure fun."},
+     {x:340,y:65, w:100,h:12},
+   ],
+   overlays:[
+     {x:450,y:26,txt:'HOBBIES & INTERESTS', font:'bold 18px monospace', color:'#f97316', glow:18},
+     {x:450,y:46,txt:'Explore freely · there are secrets up high · jump on cards to learn more', font:'9px monospace', color:'#301808'},
+   ]},
+];
+
+const ROOM_MAP = {};
+ALL_ROOMS.forEach((r,i) => { ROOM_MAP[r.id] = {...r, idx:i}; });
+const ROOM_IDS = ALL_ROOMS.map(r=>r.id);
+
+// ══════════════════════════════════════════════════════════════ STATE ══════
+let curRoom = 'intro';
+let alpha = 0;
+let transTo = null, transX = 80;
+let activeCard = null;
+let showEnd = false;
+
+// ══════════════════════════════════════════════════════════════ DRAW ═══════
+function gl(c,b=14){ ctx.shadowColor=c; ctx.shadowBlur=b; }
+function ngl(){ ctx.shadowBlur=0; }
+
+function drawGrid(col){
+  ctx.strokeStyle=col; ctx.lineWidth=0.4;
+  for(let x=0;x<W;x+=45){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=45){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+}
+
+function drawBg(accent){
+  ctx.fillStyle='#060608'; ctx.fillRect(0,0,W,H);
+  drawGrid(accent+'12');
+  const vg=ctx.createRadialGradient(W/2,H/2,50,W/2,H/2,W*.72);
+  vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,0,.7)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+}
+
+function drawCardPlatform(pl, accent) {
+  const a2 = pl.accent || accent;
+  const CARD_H = 60, PAD = 8, cY = pl.y - CARD_H;
+
+  ctx.save();
+  gl(a2, 8);
+  ctx.strokeStyle = a2; ctx.lineWidth = 1;
+  ctx.fillStyle = 'rgba(7,8,10,0.94)';
+  ctx.beginPath(); ctx.roundRect(pl.x, cY, pl.w, CARD_H, 3); ctx.fill(); ctx.stroke();
+  ngl();
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = a2; ctx.font = 'bold 9px monospace';
+  ctx.fillText(pl.label, pl.x + PAD, cY + 14);
+
+  if (pl.org) {
+    ctx.fillStyle = '#777'; ctx.font = '8px monospace';
+    ctx.fillText(pl.org, pl.x + PAD, cY + 27);
+  }
+  if (pl.date) {
+    ctx.textAlign = 'right'; ctx.fillStyle = '#444'; ctx.font = '7.5px monospace';
+    ctx.fillText(pl.date, pl.x + pl.w - PAD, cY + 14);
+    ctx.textAlign = 'left';
+  }
+  if (pl.detail) {
+    ctx.fillStyle = '#4a4a4a'; ctx.font = '7.5px monospace';
+    const preview = pl.detail.length > 52 ? pl.detail.slice(0,52)+'…' : pl.detail;
+    ctx.fillText(preview, pl.x + PAD, cY + 40);
+    ctx.fillText('↑ stand here to read full', pl.x + PAD, cY + 52);
+  }
+
+  gl(a2, 12); ctx.fillStyle = a2;
+  ctx.fillRect(pl.x, pl.y, pl.w, pl.h); ngl();
+  ctx.restore();
+}
+
+function drawFloorPlatform(pl) {
+  ctx.fillStyle='rgba(25,25,30,0.92)'; ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+  ctx.fillStyle='#2a2a32'; ctx.fillRect(pl.x,pl.y,pl.w,1);
+}
+
+function drawSkillPlatform(pl, accent) {
+  ctx.save();
+  gl(accent, 10);
+  ctx.fillStyle = accent + '22';
+  ctx.fillRect(pl.x, pl.y - 24, pl.w, 24);
+  ctx.strokeStyle = accent; ctx.lineWidth = 1;
+  ctx.strokeRect(pl.x, pl.y - 24, pl.w, 24);
+  ctx.fillStyle = accent; ctx.font = 'bold 8.5px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(pl.label, pl.x + pl.w/2, pl.y - 9);
+  ngl();
+  ctx.fillStyle = accent;
+  ctx.fillRect(pl.x, pl.y, pl.w, pl.h);
+  ctx.restore();
+}
+
+function drawPlatform(pl, accent) {
+  if (!pl.label && !pl.detail) {
+    drawFloorPlatform(pl);
+  } else if (pl.detail) {
+    drawCardPlatform(pl, accent);
+  } else {
+    drawSkillPlatform(pl, accent);
+  }
+}
+
+function drawPlayer() {
+  ctx.save(); ctx.translate(P.x+P.w/2,P.y); ctx.scale(P.dir,1);
+  gl('#F7374F',14);
+  ctx.fillStyle='#F7374F'; ctx.fillRect(-5,0,10,9);
+  ctx.fillStyle='#000'; ctx.fillRect(-3,3,2,2); ctx.fillRect(1,3,2,2);
+  ctx.fillStyle='#7a2a3e'; ctx.fillRect(-5,9,10,8);
+  ctx.fillStyle='#F7374F'; ctx.fillRect(-8,10,3,6); ctx.fillRect(5,10,3,6);
+  const lv=P.ground?[0,-3,0,3][P.frame]:0;
+  ctx.fillRect(-5,17,4,5+lv); ctx.fillRect(1,17,4,5-lv);
+  ngl(); ctx.restore();
+}
+
+function drawOverlay(o) {
+  ctx.save(); ctx.textAlign=o.align||'center'; ctx.font=o.font; ctx.fillStyle=o.color;
+  if(o.glow){gl(o.color,o.glow);}
+  ctx.fillText(o.txt,o.x,o.y); ngl(); ctx.restore();
+}
+
+function drawInfoCard(card, accent) {
+  if(!card||!card.detail) return;
+  const a2 = card.accent || accent;
+  const POPUP_W = Math.min(380, W - 20), POPUP_H = 88;
+  const px2 = Math.min(Math.max(card.x + card.w/2 - POPUP_W/2, 6), W - POPUP_W - 6);
+  const py2 = Math.max(card.y - 60 - POPUP_H - 10, 6);
+  ctx.save();
+  gl(a2, 24); ctx.strokeStyle = a2; ctx.lineWidth = 1.5;
+  ctx.fillStyle = 'rgba(3,4,6,0.98)';
+  ctx.beginPath(); ctx.roundRect(px2, py2, POPUP_W, POPUP_H, 6); ctx.fill(); ctx.stroke(); ngl();
+  ctx.textAlign='left';
+  ctx.fillStyle=a2; ctx.font='bold 11px monospace';
+  ctx.fillText((card.label||''), px2+12, py2+20);
+  if(card.org){ ctx.fillStyle='#777'; ctx.font='9px monospace'; ctx.fillText(card.org, px2+12, py2+35); }
+  if(card.date){ ctx.textAlign='right'; ctx.fillStyle='#444'; ctx.font='8.5px monospace'; ctx.fillText(card.date, px2+POPUP_W-10, py2+20); }
+  if(card.detail){
+    ctx.fillStyle='#aaa'; ctx.font='9.5px monospace'; ctx.textAlign='left';
+    const words=card.detail.split(' ');
+    let line='', lines=[], maxW=POPUP_W-24;
+    for(const w of words){
+      const test=line+(line?' ':'')+w;
+      ctx.font='9.5px monospace';
+      if(ctx.measureText(test).width > maxW){ lines.push(line); line=w; }
+      else line=test;
+    }
+    lines.push(line);
+    lines.slice(0,3).forEach((l,i)=>ctx.fillText(l, px2+12, py2+53+i*16));
+    if(lines.length>3){ ctx.fillStyle='#444'; ctx.fillText('...', px2+12, py2+53+3*16); }
+  }
+  ctx.restore();
+}
+
+function drawProgressBar(rm) {
+  const n=ALL_ROOMS.length, barW=80, gap=8;
+  const total=n*barW+(n-1)*gap, sx=(W-total)/2;
+  for(let i=0;i<n;i++){
+    const r=ALL_ROOMS[i], rx=sx+i*(barW+gap), act=r.id===curRoom;
+    ctx.save();
+    if(act){gl(r.accent,10); ctx.fillStyle=r.accent+'dd';}
+    else if(ROOM_IDS.indexOf(curRoom)>i){ctx.fillStyle=r.accent+'44';}
+    else{ctx.fillStyle='#161618';}
+    ctx.fillRect(rx,H-18,barW,6);
+    if(act){
+      ctx.fillStyle=r.accent; ctx.font='bold 7px monospace'; ctx.textAlign='center';
+      ctx.fillText(r.name.slice(0,10),rx+barW/2,H-5);
+    }
+    ngl(); ctx.restore();
+  }
+}
+
+function drawEdgeArrow(rm) {
+  const nextId = ROOM_IDS[ROOM_IDS.indexOf(curRoom)+1];
+  if(!nextId) return;
+  const nc = ROOM_MAP[nextId].accent;
+  const t = Date.now()/450, p2=0.4+0.5*Math.abs(Math.sin(t));
+  ctx.save(); gl(nc,20*p2); ctx.strokeStyle=nc; ctx.lineWidth=2.5; ctx.globalAlpha=p2;
+  ctx.beginPath(); ctx.moveTo(W-26,H/2-14); ctx.lineTo(W-10,H/2); ctx.lineTo(W-26,H/2+14); ctx.stroke();
+  ctx.globalAlpha=1; ngl(); ctx.restore();
+}
+
+function drawWatermark(name, accent) {
+  ctx.save(); ctx.fillStyle=accent+'0d';
+  ctx.font='bold 88px monospace'; ctx.textAlign='right';
+  ctx.fillText(name,W-8,H-22); ctx.restore();
+}
+
+function drawHud(rm) {
+  ctx.save();
+  ctx.fillStyle=rm.accent+'cc'; ctx.font='bold 10px monospace'; ctx.textAlign='left';
+  ctx.fillText('// '+rm.name,12,17);
+  ctx.fillStyle='#1a1a1a'; ctx.font='9px monospace'; ctx.textAlign='right';
+  ctx.fillText('WASD/Arrows · Space=jump',W-10,17);
+  ctx.restore();
+}
+
+// ══════════════════════════════════════════════════════════════ TICK ════════
+function tick() {
+  const rm = ROOM_MAP[curRoom];
+  const curIdx = ROOM_IDS.indexOf(curRoom);
+  const hasNext = curIdx < ROOM_IDS.length - 1;
+  const hasPrev = curIdx > 0;
+
+  physicsStep(rm.platforms, !hasPrev, !hasNext);
+
+  if(alpha>0.95&&!transTo&&!showEnd) {
+    if(P.x+P.w>=W-3 && hasNext) {
+      transTo=ROOM_IDS[curIdx+1]; transX=60;
+    } else if(P.x<=3 && hasPrev) {
+      transTo=ROOM_IDS[curIdx-1]; transX=W-P.w-60;
+    } else if(P.x+P.w>=W-3 && !hasNext) {
+      showEnd=true;
+      document.getElementById('end-overlay').classList.add('show');
+    }
+  }
+
+  activeCard=null;
+  for(const pl of rm.platforms){
+    if(!pl.label&&!pl.detail) continue;
+    if(P.ground&&P.x+P.w>pl.x&&P.x<pl.x+pl.w&&Math.abs(P.y+P.h-pl.y)<3)
+      activeCard=pl;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════ LOOP ════════
+function loop() {
+  requestAnimationFrame(loop);
+
+  if(transTo){
+    alpha=Math.max(alpha-0.07,0);
+    if(alpha<=0){
+      curRoom=transTo; resetP(transX,380); transTo=null; activeCard=null;
+    }
+  } else if(!showEnd){
+    alpha=Math.min(alpha+0.05,1);
+    if(alpha>0.05) tick();
+  }
+
+  const rm=ROOM_MAP[curRoom];
+  drawBg(rm.accent);
+  drawWatermark(rm.name,rm.accent);
+
+  for(const pl of rm.platforms) drawPlatform(pl,rm.accent);
+  drawEdgeArrow(rm);
+  for(const o of rm.overlays) drawOverlay(o);
+  drawPlayer();
+  drawInfoCard(activeCard,rm.accent);
+
+  if(activeCard){
+    ctx.save(); gl(activeCard.accent||rm.accent,30);
+    ctx.strokeStyle=activeCard.accent||rm.accent; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(activeCard.x,activeCard.y-60,activeCard.w,72,3); ctx.stroke();
+    ngl(); ctx.restore();
+  }
+
+  drawProgressBar(rm);
+  drawHud(rm);
+  if(alpha<1){ctx.fillStyle=`rgba(0,0,0,${1-alpha})`;ctx.fillRect(0,0,W,H);}
+}
+
+// ══════════════════════════════════════════════════════════════ NAV ══════
+function jumpTo(roomId) {
+  document.getElementById('end-overlay').classList.remove('show');
+  showEnd=false;
+  curRoom=roomId; resetP(60,380); alpha=0;
+}
+
+loop();
+</script>
 </body>
 </html>
